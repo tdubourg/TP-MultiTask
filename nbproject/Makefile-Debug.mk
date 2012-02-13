@@ -34,7 +34,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/entree.o \
+	${OBJECTDIR}/keyboard.o
 
 
 # C Compiler Flags
@@ -51,13 +53,15 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=/public/tp/tp-multitache/libtp.a -lcurses -ltcl
+LDLIBSOPTIONS=/public/tp/tp-multitache/libtp.a -lcurses /usr/lib/libtcl.so
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp_multitache
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp_multitache: /public/tp/tp-multitache/libtp.a
+
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp_multitache: /usr/lib/libtcl.so
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp_multitache: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -67,6 +71,16 @@ ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/entree.o: entree.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/entree.o entree.cpp
+
+${OBJECTDIR}/keyboard.o: keyboard.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/keyboard.o keyboard.cpp
 
 # Subprojects
 .build-subprojects:

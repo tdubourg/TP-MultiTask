@@ -7,6 +7,8 @@
       <itemPath>Heure.h</itemPath>
       <itemPath>Menu.h</itemPath>
       <itemPath>Outils.h</itemPath>
+      <itemPath>entree.h</itemPath>
+      <itemPath>keyboard.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -15,6 +17,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>entree.cpp</itemPath>
+      <itemPath>keyboard.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -41,7 +45,7 @@
           <linkerLibItems>
             <linkerLibFileItem>/public/tp/tp-multitache/libtp.a</linkerLibFileItem>
             <linkerLibStdlibItem>Curses</linkerLibStdlibItem>
-            <linkerLibLibItem>tcl</linkerLibLibItem>
+            <linkerLibFileItem>/usr/lib/libtcl.so</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

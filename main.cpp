@@ -39,11 +39,18 @@ int main(int argc, char** argv) {
     else 
     {
         //Code de la mère
+        struct sigaction action;
+        action.sa_handler = SIG_IGN;
+        action.sa_flags = 0;
+        sigaction (SIGINT, &action, NULL);
+        sigaction (SIGUSR1, &action, NULL);
+        sigaction (SIGUSR2, &action, NULL);
+                
         int st = -1;
         do {
             waitpid(noKeyboard, &st, 0);
         } while(st != 0);
-       // sigaction (SIGINT,)
+        
     }
     
     TerminerApplication();
