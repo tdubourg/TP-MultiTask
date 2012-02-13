@@ -48,16 +48,17 @@ int main(int argc, char** argv) {
         struct sigaction action;
         action.sa_handler = SIG_IGN;
         action.sa_flags = 0;
-        sigaction (SIGINT, &action, NULL);
-        sigaction (SIGUSR1, &action, NULL);
-        sigaction (SIGUSR2, &action, NULL);
+        //sigaction (SIGINT, &action, NULL);
+        sigaction(SIGUSR1, &action, NULL);
+        sigaction(SIGUSR2, &action, NULL);
         
         //Création des canaux
         mode_t mode;
         char *chemin = "key_entree";
         mode = S_IRUSR;
         mkfifo (chemin, mode);  //Canal reliant Keyboard et Entree
-        char *chemin = "key_sortie";
+        delete chemin;
+        chemin = "key_sortie";
         mkfifo (chemin, mode);  //Canal reliant Keyboard et Sortie
         
         

@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=GNU-Linux-x86
 CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux-x86
-CND_ARTIFACT_NAME_Debug=tp_multitache
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/tp_multitache
+CND_ARTIFACT_NAME_Debug=multit
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/multit
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Debug=tpmultitache.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/tpmultitache.tar
+CND_PACKAGE_NAME_Debug=multit.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/multit.tar
 # Release configuration
 CND_PLATFORM_Release=GNU-Linux-x86
 CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux-x86
-CND_ARTIFACT_NAME_Release=tp_multitache
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/tp_multitache
+CND_ARTIFACT_NAME_Release=multit
+CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/multit
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Release=tpmultitache.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/tpmultitache.tar
+CND_PACKAGE_NAME_Release=multit.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/multit.tar
 #
 # include compiler specific variables
 #
