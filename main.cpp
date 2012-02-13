@@ -18,6 +18,7 @@
 #include "Heure.h"
 #include "Menu.h"
 #include "Outils.h"
+#include "keyboard.h"
 
 
 using namespace std;
@@ -34,7 +35,7 @@ int main(int argc, char** argv) {
     if ((noKeyboard = fork()) == 0)
     {
         //Code du fils Keyboard
-        
+        keyboard();
     }
     else 
     {
