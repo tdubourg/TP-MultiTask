@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
         struct sigaction action;
         action.sa_handler = SIG_IGN;
         action.sa_flags = 0;
-        //sigaction (SIGINT, &action, NULL);
+        sigaction (SIGINT, &action, NULL);
         sigaction(SIGUSR1, &action, NULL);
         sigaction(SIGUSR2, &action, NULL);
         
