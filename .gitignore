@@ -1,1 +1,5 @@
-/build/Debug/
+build/Debug/
+dist/Debug/
+nbproject/private/
+*.~
+*.o

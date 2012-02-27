@@ -11,7 +11,13 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "Menu.h"
+#include "Config.h"
 
 #define EXIT_CODE 0
 void keyboard();

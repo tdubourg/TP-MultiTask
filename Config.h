@@ -9,8 +9,11 @@
 #define	CONFIG_H
 
 #define CANAL_KEY_ENTREE_GB "key_entree_GB.fifo"
+#define ENTREE_GB 2
 #define CANAL_KEY_ENTREE_BP_P "key_entree_BPP.fifo"
+#define ENTREE_P 0
 #define CANAL_KEY_ENTREE_BP_A "key_entree_BPA.fifo"
+#define ENTREE_A 1
 #define CANAL_KEY_SORTIE "key_sortie.fifo"
 
 #define SEM_ENTREE_GB "/entree_GB"
