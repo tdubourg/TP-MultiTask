@@ -49,7 +49,9 @@ int main(int argc, char** argv) {
     bool error = false; //Booléen permettant de vérifier si une erreur s'est produite lors de l'initialisation de l'application
 
     pid_t noKeyboard;
-    pid_t noEntrees;
+    pid_t noEntreeGB;
+    pid_t noEntreeBPP;
+    pid_t noEntreeBPA;
     pid_t noSortie;
     pid_t noHeure;
 
@@ -58,18 +60,50 @@ int main(int argc, char** argv) {
 	//Code du fils Keyboard
 	keyboard();
     }
+    else if (noKeyboard == -1) 
+    {
+	error = true;
+    }
     else if ((noHeure = fork()) == 0) 
     {
 	//Code de l'heure
 	ActiverHeure();
     }
-    else if ((noEntrees = fork()) == 0) 
+    else if (noHeure == -1) 
     {
-	//Code des fils Entrées
+	error = true;
+    }
+    else if ((noEntreeGB = fork()) == 0) 
+    {
+	//Code du fils entree Gaston Berger
+    }
+    else if (noEntreeGB == -1) 
+    {
+	error = true;
+    }
+    else if ((noEntreeBPP = fork()) == 0) 
+    {
+	//Code du fils entree Blaise Pascal (Prof)
+    }
+    else if (noEntreeBPP == -1) 
+    {
+	error = true;
+    }
+    else if ((noEntreeBPA = fork()) == 0) 
+    {
+	//Code du fils entree Blaise Pascal (Autres)
+    }
+    else if (noEntreeBPA == -1) 
+    {
+	error = true;
     }
     else if ((noSortie = fork()) == 0) 
     {
 	//Code du fils Sortie
+    }
+    else if (noSortie == -1) 
+    {
+	error = true;
     }
     
     else 
@@ -144,18 +178,42 @@ int main(int argc, char** argv) {
 	//---------------------------------------------Moteur-------------------------------------------
 	int st = -1;
 	do {
-	    waitpid(noKeyboard, &st, 0);
+	    waitpid(noKeyboard, &st, 0);  //Attend la fin de la tache fille Keyboard
 	} while (st != 0 && !error);
 
 
 	//----------------------------------------------Destruction-------------------------------------
 
-	//Envoi du signal de fin d'application aux taches filles
-	kill(0, SIGUSR2);
-
-	//Attente de la fin de toutes les taches filles pour detruire correctement les canaux et sémaphores
-	//@TODO
-
+	if (error) //S'il ya eu une erreur pendant l'initialisation, on demande à Keyboard de se détruire
+	{
+	    kill(noKeyboard, SIGUSR2);
+	}
+	
+	//Envoi du signal de fin d'application aux taches filles et attente de la fin de celles ci
+	kill(noEntreeBPA, SIGUSR2);
+	do {
+	waitpid(noEntreeBPA, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noEntreeBPP, SIGUSR2);
+	do {
+	waitpid(noEntreeBPP, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noEntreeGB, SIGUSR2);
+	do {
+	waitpid(noEntreeGB, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noHeure, SIGUSR2);
+	do {
+	waitpid(noHeure, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noSortie, SIGUSR2);
+	do {
+	waitpid(noSortie, &st, 0);
+	} while (st !=0 && !error);
 
 	//Destruction des canaux, il est necessaire d'attendre qu'il n'y ai plus de lecteurs ni d'écrivains. 
 	unlink(CANAL_KEY_ENTREE);
