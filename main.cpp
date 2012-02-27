@@ -18,8 +18,6 @@
 #include <semaphore.h>
 #include <fcntl.h>
 
-#include <errno.h>
-#include <iostream>
 
 /*----------------------------------------- Includes non systemes ---------------------------------------------- */
 
@@ -33,6 +31,7 @@
 
 const char* CANAL_KEY_ENTREE = "key_entree.fifo";
 const char* CANAL_KEY_SORTIE = "key_sortie.fifo";
+
 const char* SEM_ENTREE_GB = "/entree_GB";
 const char* SEM_ENTREE_BP_P = "/entree_BPP";
 const char* SEM_ENTREE_BP_A = "/entree_BPA";
@@ -105,7 +104,6 @@ int main(int argc, char** argv) {
     {
 	error = true;
     }
-    
     else 
     {
 	//Code de la mère

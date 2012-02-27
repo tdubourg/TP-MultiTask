@@ -9,6 +9,7 @@
       <itemPath>Outils.h</itemPath>
       <itemPath>entree.h</itemPath>
       <itemPath>keyboard.h</itemPath>
+      <itemPath>sortie.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -20,6 +21,7 @@
       <itemPath>entree.cpp</itemPath>
       <itemPath>keyboard.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
+      <itemPath>sortie.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
