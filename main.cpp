@@ -25,6 +25,7 @@
 #include "Menu.h"
 #include "Outils.h"
 #include "keyboard.h"
+#include "sortie.h"
 
 #define CLEF_COMPTEUR 11111
 #define CLEF_REQUETES 22222
