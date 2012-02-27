@@ -38,6 +38,9 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+    //Création de l'écran et de ses protections
+    InitialiserApplication(XTERM);
+        
     pid_t noKeyboard;
     pid_t noEntrees;
     pid_t noSortie;
@@ -70,9 +73,6 @@ int main(int argc, char** argv) {
         sem_t* semPtEntreeGB; //sémaphore de synchronisation pour l'entrée Gaston Berger
         sem_t* semPtEntreeBPP; //sémaphore de synchronisation pour l'entrée Blaise Pascal (Prof)
         sem_t* semPtEntreeBPA; //sémaphore de synchronisation pour l'entrée Blaise Pascal (Autre)
-
-        //Création de l'écran et de ses protections
-        InitialiserApplication(XTERM);
 
         //masquages des signaux
         struct sigaction action;
