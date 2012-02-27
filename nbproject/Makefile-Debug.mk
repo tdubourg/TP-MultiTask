@@ -57,15 +57,15 @@ LDLIBSOPTIONS=/public/tp/tp-multitache/libtp.a -lcurses /usr/lib/libtcl.so
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask: /public/tp/tp-multitache/libtp.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit: /public/tp/tp-multitache/libtp.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask: /usr/lib/libtcl.so
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit: /usr/lib/libtcl.so
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -88,7 +88,7 @@ ${OBJECTDIR}/keyboard.o: keyboard.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit
 
 # Subprojects
 .clean-subprojects:

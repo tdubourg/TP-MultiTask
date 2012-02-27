@@ -11,8 +11,11 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include "Menu.h"
 
+#define EXIT_CODE 0
 void keyboard();
+void Commande(char code, unsigned int valeur);
 
 #endif	/* KEYBOARD_H */
 
