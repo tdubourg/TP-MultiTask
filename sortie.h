@@ -9,6 +9,9 @@
 #define	SORTIE_H
 
 #include <signal.h>
+#include <fcntl.h>
+
+#include "Config.h"
 
 void Sortie();
 
