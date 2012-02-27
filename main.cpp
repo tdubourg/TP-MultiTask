@@ -41,10 +41,15 @@ int main(int argc, char** argv) {
     pid_t noKeyboard;
     pid_t noEntrees;
     pid_t noSortie;
+    pid_t noHeure;
 
     if ((noKeyboard = fork()) == 0) {
         //Code du fils Keyboard
         keyboard();
+    }
+    if ((noHeure = fork()) == 0){
+        //Code de l'heure
+        ActiverHeure();
     }
     if ((noEntrees = fork()) == 0) {
         //Code des fils Entrées
