@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>Config.h</itemPath>
       <itemPath>Heure.h</itemPath>
       <itemPath>Menu.h</itemPath>
       <itemPath>Outils.h</itemPath>

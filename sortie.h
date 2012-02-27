@@ -8,7 +8,7 @@
 #ifndef SORTIE_H
 #define	SORTIE_H
 
-
+#include <signal.h>
 
 void Sortie();
 
