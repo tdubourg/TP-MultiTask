@@ -10,6 +10,7 @@
       <itemPath>Outils.h</itemPath>
       <itemPath>entree.h</itemPath>
       <itemPath>keyboard.h</itemPath>
+      <itemPath>main.h</itemPath>
       <itemPath>sortie.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"

@@ -5,32 +5,7 @@
  * Created on 13 février 2012, 15:08
  */
 
-/*-------------------------------------------- Includes systemes ----------------------------------------------- */
-
-#include <cstdlib>
-#include <time.h>
-#include <unistd.h> 
-#include <signal.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/shm.h>
-#include <semaphore.h>
-#include <fcntl.h>
-
-
-/*----------------------------------------- Includes non systemes ---------------------------------------------- */
-
-#include "Heure.h"
-#include "Menu.h"
-#include "Outils.h"
-#include "keyboard.h"
-#include "sortie.h"
-#include "Config.h"
-
-#define CLEF_COMPTEUR 11111
-#define CLEF_REQUETES 22222
-
+#include "main.h"
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -142,10 +117,10 @@ int main(int argc, char** argv) {
 	}
 
 	//Création des mémoires partagées
-	if ((shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof ( int), 0666 | IPC_CREAT)) < 0 && !error) {
+	if ((shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | IPC_CREAT)) < 0 && !error) {
 	    error = true;
 	}
-	if ((shmIdRequetes = shmget(CLEF_REQUETES, sizeof ( string), 0666 | IPC_CREAT)) < 0 && !error)//Me souvient plus de quoi on mettait dans celui là... @TODO
+	if ((shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete)*3, 0666 | IPC_CREAT)) < 0 && !error)
 	{
 	    error = true;
 	}
