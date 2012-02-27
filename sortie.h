@@ -9,5 +9,8 @@
 #define	SORTIE_H
 
 
+
+void Sortie();
+
 #endif	/* SORTIE_H */
 

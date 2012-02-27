@@ -30,14 +30,16 @@
 #define CLEF_COMPTEUR 11111
 #define CLEF_REQUETES 22222
 
-const char* CANAL_KEY_ENTREE = "key_entree.fifo";
-const char* CANAL_KEY_SORTIE = "key_sortie.fifo";
+#define CANAL_KEY_ENTREE_GB "key_entree_GB.fifo"
+#define CANAL_KEY_ENTREE_BP_P "key_entree_BPP.fifo"
+#define CANAL_KEY_ENTREE_BP_A "key_entree_BPA.fifo"
+#define CANAL_KEY_SORTIE "key_sortie.fifo"
 
-const char* SEM_ENTREE_GB = "/entree_GB";
-const char* SEM_ENTREE_BP_P = "/entree_BPP";
-const char* SEM_ENTREE_BP_A = "/entree_BPA";
-const char* SEM_SHM_COMPTEUR = "/compteur";
-const char* SEM_SHM_REQUETE = "/requete";
+#define SEM_ENTREE_GB "/entree_GB"
+#define SEM_ENTREE_BP_P "/entree_BPP"
+#define SEM_ENTREE_BP_A "/entree_BPA"
+#define SEM_SHM_COMPTEUR "/compteur"
+#define SEM_SHM_REQUETE "/requete"
 
 using namespace std;
 
@@ -132,7 +134,15 @@ int main(int argc, char** argv) {
 	sigaction(SIGUSR2, &action, NULL);
 
 	//Création des canaux
-	if (mkfifo(CANAL_KEY_ENTREE, 0666) == -1 && !error) //Canal reliant Keyboard et Entree
+	if (mkfifo(CANAL_KEY_ENTREE_BP_A, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal autres
+	{	    
+	    error = true;
+	}
+	if (mkfifo(CANAL_KEY_ENTREE_BP_P, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal profs
+	{	    
+	    error = true;
+	}
+	if (mkfifo(CANAL_KEY_ENTREE_GB, 0666) == -1 && !error) //Canal reliant Keyboard et Entree gaston berger
 	{	    
 	    error = true;
 	}
@@ -215,7 +225,9 @@ int main(int argc, char** argv) {
 	} while (st !=0 && !error);
 
 	//Destruction des canaux, il est necessaire d'attendre qu'il n'y ai plus de lecteurs ni d'écrivains. 
-	unlink(CANAL_KEY_ENTREE);
+	unlink(CANAL_KEY_ENTREE_BP_A);
+	unlink(CANAL_KEY_ENTREE_BP_P);
+	unlink(CANAL_KEY_ENTREE_GB);
 	unlink(CANAL_KEY_SORTIE);
 
 	//Destruction des mémoires partagées 
