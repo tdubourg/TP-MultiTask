@@ -36,7 +36,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/entree.o \
-	${OBJECTDIR}/keyboard.o
+	${OBJECTDIR}/keyboard.o \
+	${OBJECTDIR}/sortie.o
 
 
 # C Compiler Flags
@@ -77,6 +78,11 @@ ${OBJECTDIR}/keyboard.o: keyboard.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/keyboard.o keyboard.cpp
+
+${OBJECTDIR}/sortie.o: sortie.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/sortie.o sortie.cpp
 
 # Subprojects
 .build-subprojects:

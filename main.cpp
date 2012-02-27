@@ -18,8 +18,6 @@
 #include <semaphore.h>
 #include <fcntl.h>
 
-#include <errno.h>
-#include <iostream>
 
 /*----------------------------------------- Includes non systemes ---------------------------------------------- */
 
@@ -27,17 +25,21 @@
 #include "Menu.h"
 #include "Outils.h"
 #include "keyboard.h"
+#include "sortie.h"
 
 #define CLEF_COMPTEUR 11111
 #define CLEF_REQUETES 22222
 
-const char* CANAL_KEY_ENTREE = "key_entree.fifo";
-const char* CANAL_KEY_SORTIE = "key_sortie.fifo";
-const char* SEM_ENTREE_GB = "/entree_GB";
-const char* SEM_ENTREE_BP_P = "/entree_BPP";
-const char* SEM_ENTREE_BP_A = "/entree_BPA";
-const char* SEM_SHM_COMPTEUR = "/compteur";
-const char* SEM_SHM_REQUETE = "/requete";
+#define CANAL_KEY_ENTREE_GB "key_entree_GB.fifo"
+#define CANAL_KEY_ENTREE_BP_P "key_entree_BPP.fifo"
+#define CANAL_KEY_ENTREE_BP_A "key_entree_BPA.fifo"
+#define CANAL_KEY_SORTIE "key_sortie.fifo"
+
+#define SEM_ENTREE_GB "/entree_GB"
+#define SEM_ENTREE_BP_P "/entree_BPP"
+#define SEM_ENTREE_BP_A "/entree_BPA"
+#define SEM_SHM_COMPTEUR "/compteur"
+#define SEM_SHM_REQUETE "/requete"
 
 using namespace std;
 
@@ -49,7 +51,9 @@ int main(int argc, char** argv) {
     bool error = false; //Booléen permettant de vérifier si une erreur s'est produite lors de l'initialisation de l'application
 
     pid_t noKeyboard;
-    pid_t noEntrees;
+    pid_t noEntreeGB;
+    pid_t noEntreeBPP;
+    pid_t noEntreeBPA;
     pid_t noSortie;
     pid_t noHeure;
 
@@ -58,20 +62,51 @@ int main(int argc, char** argv) {
 	//Code du fils Keyboard
 	keyboard();
     }
+    else if (noKeyboard == -1) 
+    {
+	error = true;
+    }
     else if ((noHeure = fork()) == 0) 
     {
 	//Code de l'heure
 	ActiverHeure();
     }
-    else if ((noEntrees = fork()) == 0) 
+    else if (noHeure == -1) 
     {
-	//Code des fils Entrées
+	error = true;
+    }
+    else if ((noEntreeGB = fork()) == 0) 
+    {
+	//Code du fils entree Gaston Berger
+    }
+    else if (noEntreeGB == -1) 
+    {
+	error = true;
+    }
+    else if ((noEntreeBPP = fork()) == 0) 
+    {
+	//Code du fils entree Blaise Pascal (Prof)
+    }
+    else if (noEntreeBPP == -1) 
+    {
+	error = true;
+    }
+    else if ((noEntreeBPA = fork()) == 0) 
+    {
+	//Code du fils entree Blaise Pascal (Autres)
+    }
+    else if (noEntreeBPA == -1) 
+    {
+	error = true;
     }
     else if ((noSortie = fork()) == 0) 
     {
 	//Code du fils Sortie
     }
-    
+    else if (noSortie == -1) 
+    {
+	error = true;
+    }
     else 
     {
 	//Code de la mère
@@ -99,7 +134,15 @@ int main(int argc, char** argv) {
 	sigaction(SIGUSR2, &action, NULL);
 
 	//Création des canaux
-	if (mkfifo(CANAL_KEY_ENTREE, 0666) == -1 && !error) //Canal reliant Keyboard et Entree
+	if (mkfifo(CANAL_KEY_ENTREE_BP_A, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal autres
+	{	    
+	    error = true;
+	}
+	if (mkfifo(CANAL_KEY_ENTREE_BP_P, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal profs
+	{	    
+	    error = true;
+	}
+	if (mkfifo(CANAL_KEY_ENTREE_GB, 0666) == -1 && !error) //Canal reliant Keyboard et Entree gaston berger
 	{	    
 	    error = true;
 	}
@@ -144,21 +187,47 @@ int main(int argc, char** argv) {
 	//---------------------------------------------Moteur-------------------------------------------
 	int st = -1;
 	do {
-	    waitpid(noKeyboard, &st, 0);
+	    waitpid(noKeyboard, &st, 0);  //Attend la fin de la tache fille Keyboard
 	} while (st != 0 && !error);
 
 
 	//----------------------------------------------Destruction-------------------------------------
 
-	//Envoi du signal de fin d'application aux taches filles
-	kill(0, SIGUSR2);
-
-	//Attente de la fin de toutes les taches filles pour detruire correctement les canaux et sémaphores
-	//@TODO
-
+	if (error) //S'il ya eu une erreur pendant l'initialisation, on demande à Keyboard de se détruire
+	{
+	    kill(noKeyboard, SIGUSR2);
+	}
+	
+	//Envoi du signal de fin d'application aux taches filles et attente de la fin de celles ci
+	kill(noEntreeBPA, SIGUSR2);
+	do {
+	waitpid(noEntreeBPA, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noEntreeBPP, SIGUSR2);
+	do {
+	waitpid(noEntreeBPP, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noEntreeGB, SIGUSR2);
+	do {
+	waitpid(noEntreeGB, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noHeure, SIGUSR2);
+	do {
+	waitpid(noHeure, &st, 0);
+	} while (st !=0 && !error);
+	
+	kill(noSortie, SIGUSR2);
+	do {
+	waitpid(noSortie, &st, 0);
+	} while (st !=0 && !error);
 
 	//Destruction des canaux, il est necessaire d'attendre qu'il n'y ai plus de lecteurs ni d'écrivains. 
-	unlink(CANAL_KEY_ENTREE);
+	unlink(CANAL_KEY_ENTREE_BP_A);
+	unlink(CANAL_KEY_ENTREE_BP_P);
+	unlink(CANAL_KEY_ENTREE_GB);
 	unlink(CANAL_KEY_SORTIE);
 
 	//Destruction des mémoires partagées 
