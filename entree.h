@@ -9,14 +9,16 @@
 #define	ENTREE_H
 
 //* systèmes ... 
-
-//*custom ... 
-#include "Config.h"
 #include <fcntl.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 #include <sys/shm.h>
+#include <semaphore.h>
+
+//*custom ... 
+#include "Config.h"
+#include "Outils.h"
 
 #ifdef MAP
 #include <fstream>
