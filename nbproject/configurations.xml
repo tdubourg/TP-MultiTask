@@ -20,6 +20,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>affichageSortie.cpp</itemPath>
       <itemPath>entree.cpp</itemPath>
       <itemPath>keyboard.cpp</itemPath>
       <itemPath>main.cpp</itemPath>

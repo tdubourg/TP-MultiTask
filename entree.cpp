@@ -1,6 +1,14 @@
 #include "entree.h"
 
 void entree(int porte_num) {
+#ifdef MAP
+	std::stringstream fname_tmp;
+	fname_tmp << "entree" << porte_num << ".log";
+	std::string fname = fname_tmp.str();
+	std::ofstream f(fname.c_str());
+	f << "Lancement de Entrée avec porte_num = " << porte_num;
+#endif
+	
 	int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | 0);
 	requete *shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
 	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | 0);
@@ -42,12 +50,9 @@ void entree(int porte_num) {
 	int valeur;
 
 #ifdef MAP
-	std::stringstream fname_tmp;
-	fname_tmp << "entree" << porte_num << ".log";
-	std::string fname = fname_tmp.str();
-	std::ofstream f(fname.c_str());
-	f << "Entrée : Debut de lecture du canal" << std::endl;
+		f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
+		
 	while (read(desc, &valeur, sizeof (unsigned int))) {
 #ifdef MAP
 		f << "Valeur lue sur le canal :" << valeur << std::endl;

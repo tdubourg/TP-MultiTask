@@ -45,23 +45,31 @@ int main (int argc, char** argv){
     sigaction (SIGUSR2, &action, NULL);
 
     //Création des canaux
-    if(mkfifo (CANAL_KEY_ENTREE_BP_A, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal autres
+#ifdef MAP
+	cout << "Beginning creating shared memories" << endl;
+#endif
+    if(mkfifo(CANAL_KEY_ENTREE_BP_A, 0666) == -1) //Canal reliant Keyboard et Entree blaise pascal autres
     {
-        //error = true;
+        error = true;
+#ifdef MAP
         cout << "lol";
+#endif
     }
-    if(mkfifo (CANAL_KEY_ENTREE_BP_P, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal profs
+    if(!error && mkfifo (CANAL_KEY_ENTREE_BP_P, 0666) == -1) //Canal reliant Keyboard et Entree blaise pascal profs
     {
-        //error = true;
+        error = true;
     }
-    if(mkfifo (CANAL_KEY_ENTREE_GB, 0666) == -1 && !error) //Canal reliant Keyboard et Entree gaston berger
+    if(!error && mkfifo (CANAL_KEY_ENTREE_GB, 0666) == -1) //Canal reliant Keyboard et Entree gaston berger
     {
-        //error = true;
+        error = true;
     }
-    if(mkfifo (CANAL_KEY_SORTIE, 0666) == -1 && !error) //Canal reliant Keyboard et Sortie
+    if(!error && mkfifo (CANAL_KEY_SORTIE, 0666) == -1) //Canal reliant Keyboard et Sortie
     {
-        //error = true;
+        error = true;
     }
+#ifdef MAP
+	cout << "End creating shared memories" << endl;
+#endif
 
     //Création des mémoires partagées
     if(!error && (shmIdCompteur = shmget (CLEF_COMPTEUR, sizeof(unsigned int), 0666 | IPC_CREAT)) < 0){
@@ -73,7 +81,7 @@ int main (int argc, char** argv){
     if(!error && (shmPtCompteur = (unsigned int*) shmat (shmIdCompteur, NULL, 0)) == NULL){
         error = true;
     }
-    else{
+	else if(!error) {
         *shmPtCompteur = CAPACITE_PARKING;
     }
     /*/if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
@@ -107,14 +115,14 @@ int main (int argc, char** argv){
 
     if((noKeyboard = fork ()) == 0){
         //Code du fils Keyboard
-        //keyboard ();
+        keyboard ();
     }
     else if(noKeyboard == -1){
         error = true;
     }
     else if((noHeure = fork ()) == 0){
         //Code de l'heure
-        //ActiverHeure ();
+        ActiverHeure ();
     }
     else if(noHeure == -1){
         error = true;
