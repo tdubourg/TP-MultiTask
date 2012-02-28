@@ -164,6 +164,9 @@ int main (int argc, char** argv){
         do{
             waitpid (noKeyboard, &st, 0); //Attend la fin de la tache fille Keyboard
         }while(st != 0);
+#ifdef MAP
+		f << "Keyboard has exited" << endl;
+#endif
 
 
         //----------------------------------------------Destruction-------------------------------------

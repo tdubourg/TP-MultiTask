@@ -46,6 +46,9 @@ void Commande(char code, unsigned int valeur) {
 #endif
 	switch (code) {
 		case 'E':
+#ifdef MAP
+			f << "Exiting keyboard !" << endl;
+#endif
 			exit(EXIT_CODE);
 			break;
 
