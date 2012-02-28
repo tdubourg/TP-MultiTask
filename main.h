@@ -21,6 +21,7 @@
 #include <semaphore.h>
 #include <fcntl.h>
 
+#include <errno.h>
 
 /*----------------------------------------- Includes non systemes ---------------------------------------------- */
 

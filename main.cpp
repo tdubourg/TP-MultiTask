@@ -11,7 +11,7 @@ using namespace std;
 int main (int argc, char** argv){
 
     //Création de l'écran et de ses protections
-    InitialiserApplication (XTERM);
+    //InitialiserApplication (XTERM);
 
     bool error = false; //Booléen permettant de vérifier si une erreur s'est produite lors de l'initialisation de l'application
 
@@ -47,19 +47,20 @@ int main (int argc, char** argv){
     //Création des canaux
     if(mkfifo (CANAL_KEY_ENTREE_BP_A, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal autres
     {
-        error = true;
+        //error = true;
+        cout << "lol";
     }
     if(mkfifo (CANAL_KEY_ENTREE_BP_P, 0666) == -1 && !error) //Canal reliant Keyboard et Entree blaise pascal profs
     {
-        error = true;
+        //error = true;
     }
     if(mkfifo (CANAL_KEY_ENTREE_GB, 0666) == -1 && !error) //Canal reliant Keyboard et Entree gaston berger
     {
-        error = true;
+        //error = true;
     }
     if(mkfifo (CANAL_KEY_SORTIE, 0666) == -1 && !error) //Canal reliant Keyboard et Sortie
     {
-        error = true;
+        //error = true;
     }
 
     //Création des mémoires partagées
@@ -72,7 +73,7 @@ int main (int argc, char** argv){
     if(!error && (shmPtCompteur = (unsigned int*) shmat (shmIdCompteur, NULL, 0)) == NULL){
         error = true;
     }
-    else if (!error){
+    else{
         *shmPtCompteur = CAPACITE_PARKING;
     }
     /*/if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
@@ -106,14 +107,14 @@ int main (int argc, char** argv){
 
     if((noKeyboard = fork ()) == 0){
         //Code du fils Keyboard
-        keyboard ();
+        //keyboard ();
     }
     else if(noKeyboard == -1){
         error = true;
     }
     else if((noHeure = fork ()) == 0){
         //Code de l'heure
-        ActiverHeure ();
+        //ActiverHeure ();
     }
     else if(noHeure == -1){
         error = true;
@@ -141,6 +142,7 @@ int main (int argc, char** argv){
     }
     else if((noSortie = fork ()) == 0){
         //Code du fils Sortie
+        Sortie ();
     }
     else if(noSortie == -1){
         error = true;
@@ -199,7 +201,8 @@ int main (int argc, char** argv){
 
         //Destruction des mémoires partagées 
         shmdt (shmPtCompteur);
-        shmdt (shmPtRequetes);
+        shmctl (shmIdCompteur, IPC_RMID, 0);
+        shmctl (shmIdRequetes, IPC_RMID, 0);
 
         //Destruction des sémaphores
         sem_unlink (SEM_ENTREE_BP_A);
