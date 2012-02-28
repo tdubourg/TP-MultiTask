@@ -10,6 +10,8 @@
 
 #include <signal.h>
 #include <fcntl.h>
+#include <semaphore.h>
+#include <sys/shm.h>
 
 #include "Config.h"
 

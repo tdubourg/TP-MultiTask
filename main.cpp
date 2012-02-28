@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     int shmIdRequetes;
 
     int* shmPtCompteur;
-    void* shmPtRequetes;
+    requete* shmPtRequetes;
 
     sem_t* semPtEntreeGB; //sémaphore de synchronisation pour l'entrée Gaston Berger
     sem_t* semPtEntreeBPP; //sémaphore de synchronisation pour l'entrée Blaise Pascal (Prof)
@@ -74,9 +74,9 @@ int main(int argc, char** argv) {
     } else {
 	*shmPtCompteur = CAPACITE_PARKING;
     }
-   /* if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
+    /*/if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
 	error = true;
-    }*//* abandopnné else { //* Initialisation du tableau à NULL pour qu'on puisse savoir s'il y a déjà qqchose dedans ou pas quand on le manipule par la suite
+    }/* abandopnné else { //* Initialisation du tableau à NULL pour qu'on puisse savoir s'il y a déjà qqchose dedans ou pas quand on le manipule par la suite
 	    shmPtRequetes = (requete**)shmPtRequetes;
 	    for(int i = 0; i < NB_PORTES; i++) {
 		shmPtRequetes[i] = NULL;
@@ -85,20 +85,19 @@ int main(int argc, char** argv) {
 
 
     //Création des sémaphores
-    // @TODO : déplacer les && !error en première condition
-    if ((semPtEntreeGB = sem_open(SEM_ENTREE_GB, O_CREAT, 0666, 0)) == SEM_FAILED && !error) {
+    if (!error && (semPtEntreeGB = sem_open(SEM_ENTREE_GB, O_CREAT, 0666, 0)) == SEM_FAILED) {
 	error = true;
     }
-    if ((semPtEntreeBPA = sem_open(SEM_ENTREE_BP_A, O_CREAT, 0666, 0)) == SEM_FAILED && !error) {
+    if (!error && (semPtEntreeBPA = sem_open(SEM_ENTREE_BP_A, O_CREAT, 0666, 0)) == SEM_FAILED) {
 	error = true;
     }
-    if ((semPtEntreeBPP = sem_open(SEM_ENTREE_BP_P, O_CREAT, 0666, 0)) == SEM_FAILED && !error) {
+    if (!error && (semPtEntreeBPP = sem_open(SEM_ENTREE_BP_P, O_CREAT, 0666, 0)) == SEM_FAILED) {
 	error = true;
     }
-    if ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, O_CREAT, 0666, 0)) == SEM_FAILED && !error) {
+    if (!error && (semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, O_CREAT, 0666, 1)) == SEM_FAILED) {
 	error = true;
     }
-    if ((semPtShmRequete = sem_open(SEM_SHM_REQUETE, O_CREAT, 0666, 0)) == SEM_FAILED && !error) {
+    if (!error && (semPtShmRequete = sem_open(SEM_SHM_REQUETE, O_CREAT, 0666, 1)) == SEM_FAILED) {
 	error = true;
     }
 
