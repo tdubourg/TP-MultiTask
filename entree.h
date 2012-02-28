@@ -16,6 +16,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifdef MAP
+#include <fstream>
+#endif
+
 
 void entree(int porte_num);
 

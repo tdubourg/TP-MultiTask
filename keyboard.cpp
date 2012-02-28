@@ -3,11 +3,16 @@
 using namespace std;
 
 void keyboard() {
-    Menu();
+    for(;;) {
+	Menu();
+    }
 }
 
 void pousserVoitureVersEntree(char code, unsigned int valeur) {
-
+#ifdef MAP
+	    std::ofstream f("debug_kb_canalw.log");
+	    f << "pousserVoitureVersEntree() lancée avec : code=" << code << ", valeur=" << valeur << std::endl;
+#endif
     char *cname;
 
     switch (valeur) {
@@ -29,9 +34,16 @@ void pousserVoitureVersEntree(char code, unsigned int valeur) {
     }
     write(desc, &valeur, sizeof (unsigned int));
     close(desc);
+#ifdef MAP
+    f.close();
+#endif
 }
 
 void Commande(char code, unsigned int valeur) {
+#ifdef MAP
+	    std::ofstream f("debug_kb1.log");
+	    f << "Commande() lancée avec : code=" << code << ", valeur=" << valeur << std::endl;
+#endif
     switch (code) {
 	case 'E':
 	    exit(EXIT_CODE);
@@ -42,8 +54,13 @@ void Commande(char code, unsigned int valeur) {
 	case 'S':
 	    //* valeur = n° de la porte (0,1,2)
 	    char* cname;
-
+#ifdef MAP
+	    f << "Commande reconnue, lancement de pousserVoitureVersEntree" << std::endl;
+#endif
 	    pousserVoitureVersEntree(code, valeur);
 	    break;
     }
+#ifdef MAP
+    f.close();
+#endif
 }

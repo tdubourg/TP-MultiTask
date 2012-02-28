@@ -22,5 +22,12 @@
 #define SEM_SHM_COMPTEUR "/compteur"
 #define SEM_SHM_REQUETE "/requete"
 
+#define MAP
+
+#ifdef MAP
+#include <iostream>
+#include <fstream>
+#endif
+
 #endif	/* CONFIG_H */
 

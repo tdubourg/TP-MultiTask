@@ -1,5 +1,3 @@
-#include <bits/fcntl.h>
-
 #include "entree.h"
 
 void entree(int porte_num) {
@@ -20,6 +18,15 @@ void entree(int porte_num) {
 	return;
     }
     int valeur;
-    read(desc, &valeur, sizeof (unsigned int));
+    
+#ifdef MAP
+    std::ofstream f("pouet.txt");
+#endif
+    while(read(desc, &valeur, sizeof (unsigned int))) {
+	f << valeur;
+    }
+#ifdef MAP
+    f.close();
+#endif
     close(desc);
 }
