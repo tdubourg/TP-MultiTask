@@ -31,6 +31,7 @@
 #include "Menu.h"
 #include "Outils.h"
 #include "keyboard.h"
+#include "entree.h"
 #include "sortie.h"
 #include "Config.h"
 

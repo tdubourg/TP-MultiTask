@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
     else if ((noEntreeGB = fork()) == 0) 
     {
 	//Code du fils entree Gaston Berger
+	entree(ENTREE_GB);
     }
     else if (noEntreeGB == -1) 
     {
@@ -50,7 +51,8 @@ int main(int argc, char** argv) {
     }
     else if ((noEntreeBPP = fork()) == 0) 
     {
-	//Code du fils entree Blaise Pascal (Prof)
+	//Code du fils entree Prof (Blaise Pascal)
+	entree(ENTREE_P);
     }
     else if (noEntreeBPP == -1) 
     {
@@ -58,7 +60,8 @@ int main(int argc, char** argv) {
     }
     else if ((noEntreeBPA = fork()) == 0) 
     {
-	//Code du fils entree Blaise Pascal (Autres)
+	//Code du fils entree Autres (Blaise Pascal)
+	entree(ENTREE_A);
     }
     else if (noEntreeBPA == -1) 
     {
