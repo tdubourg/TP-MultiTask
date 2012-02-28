@@ -13,7 +13,7 @@ void pousserVoitureVersEntree(char code, unsigned int valeur) {
 	    std::ofstream f("debug_kb_canalw.log");
 	    f << "pousserVoitureVersEntree() lancée avec : code=" << code << ", valeur=" << valeur << std::endl;
 #endif
-    char *cname;
+    const char *cname;
 
     switch (valeur) {
 	case ENTREE_GB:

@@ -1,8 +1,12 @@
 #include "entree.h"
-#include "main.h"
 
-void entree(int porte_num, void* shmPtRequetes) {
-    char *cname;
+void entree(int porte_num) {
+    int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | 0);
+    requete *shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
+    int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | 0);
+    int * shmPtCompteur = (int *) shmat(shmIdCompteur, NULL, 0);
+
+    const char *cname;
     switch (porte_num) {
 	case ENTREE_P:
 	    cname = CANAL_KEY_ENTREE_BP_P;
@@ -31,11 +35,17 @@ void entree(int porte_num, void* shmPtRequetes) {
 #ifdef MAP
 	f << "Valeur lue sur le canal :" << valeur << std::endl;
 #endif
+	if ((*shmPtCompteur) > 0) {
+	    //* Y'a de la place, on se gare :
+	    //* On décrémente le compteur avant :
+	    //* Avec gestion du sémaphore
 
-	requete req;
-	req.arrivee = clock(); // @TODO : Check if that's correct
-	req.type = (char) valeur;
-	shmPtRequetes[porte_num] = req;
+	} else {
+	    requete req;
+	    req.arrivee = (int) time(NULL);
+	    req.type = (char) valeur;
+	    shmPtRequetes[porte_num] = req;
+	}
     }
 #ifdef MAP
     f.close();

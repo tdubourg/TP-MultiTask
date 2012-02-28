@@ -23,6 +23,18 @@
 #define SEM_SHM_REQUETE "/requete"
 #define NB_PORTES 3
 
+#define CLEF_COMPTEUR 11111
+#define CLEF_REQUETES 22222
+
+#define CAPACITE_PARKING 8
+
+typedef struct r
+{
+    char type;
+    int arrivee;
+} requete ; 
+
+
 #define MAP
 
 #ifdef MAP

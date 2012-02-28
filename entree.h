@@ -14,7 +14,9 @@
 #include "Config.h"
 #include <fcntl.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
+#include <sys/shm.h>
 
 #ifdef MAP
 #include <fstream>

@@ -8,9 +8,6 @@
 #ifndef MAIN_H
 #define	MAIN_H
 
-#define CLEF_COMPTEUR 11111
-#define CLEF_REQUETES 22222
-
 /*-------------------------------------------- Includes systemes ----------------------------------------------- */
 
 #include <cstdlib>
@@ -36,12 +33,6 @@
 #include "Config.h"
 
 int main(int argc, char** argv);
-
-typedef struct r
-{
-    char type;
-    int arrivee;
-} requete ; 
 
 #endif	/* MAIN_H */
 
