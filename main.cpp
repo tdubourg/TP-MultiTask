@@ -9,9 +9,12 @@
 using namespace std;
 
 int main (int argc, char** argv){
-
+#ifdef MAP
+	std::ofstream f("debug_main.log");
+	f << "Lancement du main" << endl;
+#endif
     //Création de l'écran et de ses protections
-    //InitialiserApplication (XTERM);
+    InitialiserApplication (XTERM);
 
     bool error = false; //Booléen permettant de vérifier si une erreur s'est produite lors de l'initialisation de l'application
 
@@ -46,13 +49,13 @@ int main (int argc, char** argv){
 
     //Création des canaux
 #ifdef MAP
-	cout << "Beginning creating shared memories" << endl;
+	f << "Beginning creating shared memories" << endl;
 #endif
     if(mkfifo(CANAL_KEY_ENTREE_BP_A, 0666) == -1) //Canal reliant Keyboard et Entree blaise pascal autres
     {
         error = true;
 #ifdef MAP
-        cout << "lol";
+        f << "lol";
 #endif
     }
     if(!error && mkfifo (CANAL_KEY_ENTREE_BP_P, 0666) == -1) //Canal reliant Keyboard et Entree blaise pascal profs
@@ -68,7 +71,7 @@ int main (int argc, char** argv){
         error = true;
     }
 #ifdef MAP
-	cout << "End creating shared memories" << endl;
+	f << "End creating shared memories" << endl;
 #endif
 
     //Création des mémoires partagées
@@ -110,8 +113,6 @@ int main (int argc, char** argv){
     if(!error && (semPtShmRequete = sem_open (SEM_SHM_REQUETE, O_CREAT, 0666, 1)) == SEM_FAILED){
         error = true;
     }
-
-
 
     if((noKeyboard = fork ()) == 0){
         //Code du fils Keyboard
@@ -229,5 +230,8 @@ int main (int argc, char** argv){
     else{
         return 0;
     }
+#ifdef MAP
+	f.close();
+#endif
 }
 
