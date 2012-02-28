@@ -1,8 +1,9 @@
 #include "entree.h"
+#include "main.h"
 
-void entree(int porte_num) {
+void entree(int porte_num, void* shmPtRequetes) {
     char *cname;
-    switch(porte_num) {
+    switch (porte_num) {
 	case ENTREE_P:
 	    cname = CANAL_KEY_ENTREE_BP_P;
 	    break;
@@ -18,7 +19,7 @@ void entree(int porte_num) {
 	return;
     }
     int valeur;
-    
+
 #ifdef MAP
     std::stringstream fname_tmp;
     fname_tmp << "entree" << porte_num << ".log";
@@ -26,8 +27,15 @@ void entree(int porte_num) {
     std::ofstream f(fname.c_str());
     f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
-    while(read(desc, &valeur, sizeof (unsigned int))) {
+    while (read(desc, &valeur, sizeof (unsigned int))) {
+#ifdef MAP
 	f << "Valeur lue sur le canal :" << valeur << std::endl;
+#endif
+
+	requete req;
+	req.arrivee = clock(); // @TODO : Check if that's correct
+	req.type = (char) valeur;
+	shmPtRequetes[porte_num] = req;
     }
 #ifdef MAP
     f.close();

@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     else if ((noEntreeGB = fork()) == 0) 
     {
 	//Code du fils entree Gaston Berger
-	entree(ENTREE_GB);
+	entree(ENTREE_GB, shmPtRequetes);
     }
     else if (noEntreeGB == -1) 
     {
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
     else if ((noEntreeBPP = fork()) == 0) 
     {
 	//Code du fils entree Prof (Blaise Pascal)
-	entree(ENTREE_P);
+	entree(ENTREE_P, shmPtRequetes);
     }
     else if (noEntreeBPP == -1) 
     {
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     else if ((noEntreeBPA = fork()) == 0) 
     {
 	//Code du fils entree Autres (Blaise Pascal)
-	entree(ENTREE_A);
+	entree(ENTREE_A, shmPtRequetes);
     }
     else if (noEntreeBPA == -1) 
     {
@@ -123,16 +123,22 @@ int main(int argc, char** argv) {
 	if ((shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | IPC_CREAT)) < 0 && !error) {
 	    error = true;
 	}
-	if ((shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete)*3, 0666 | IPC_CREAT)) < 0 && !error)
+	if ((shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete)*NB_PORTES, 0666 | IPC_CREAT)) < 0 && !error)
 	{
 	    error = true;
 	}
 	if ((shmPtCompteur = shmat(shmIdCompteur, NULL, 0)) == NULL && !error) {
 	    error = true;
 	}
-	if ((shmPtRequetes = shmat(shmIdRequetes, NULL, 0)) == NULL && !error) {
+	if ((shmPtRequetes = (requete**)shmat(shmIdRequetes, NULL, 0)) == NULL && !error) {
 	    error = true;
-	}
+	}/* abandopnné else { //* Initialisation du tableau à NULL pour qu'on puisse savoir s'il y a déjà qqchose dedans ou pas quand on le manipule par la suite
+	    shmPtRequetes = (requete**)shmPtRequetes;
+	    for(int i = 0; i < NB_PORTES; i++) {
+		shmPtRequetes[i] = NULL;
+	    }
+	}*/
+	    
 
 	//Création des sémaphores
 	if ((semPtEntreeGB = sem_open(SEM_ENTREE_GB, O_CREAT, 0666, 0)) == SEM_FAILED && !error) {
