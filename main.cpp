@@ -200,10 +200,10 @@ int main (int argc, char** argv){
             waitpid (noHeure, &st, 0);
         }while(st != 0);
 
-        //kill (noSortie, SIGUSR2);
-        //do{
-        //    waitpid (noSortie, &st, 0);
-        //}while(st != 0);
+        kill (noSortie, SIGUSR2);
+        do{
+            waitpid (noSortie, &st, 0);
+        }while(st != 0);
 
         //Destruction des canaux, il est necessaire d'attendre qu'il n'y ai plus de lecteurs ni d'écrivains. 
         unlink (CANAL_KEY_ENTREE_BP_A);
