@@ -20,10 +20,14 @@ void entree(int porte_num) {
     int valeur;
     
 #ifdef MAP
-    std::ofstream f("pouet.txt");
+    std::stringstream fname_tmp;
+    fname_tmp << "entree" << porte_num << ".log";
+    std::string fname = fname_tmp.str();
+    std::ofstream f(fname.c_str());
+    f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
     while(read(desc, &valeur, sizeof (unsigned int))) {
-	f << valeur;
+	f << "Valeur lue sur le canal :" << valeur << std::endl;
     }
 #ifdef MAP
     f.close();

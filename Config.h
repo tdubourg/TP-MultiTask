@@ -25,8 +25,10 @@
 #define MAP
 
 #ifdef MAP
+//* Debugging purposes :
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #endif
 
 #endif	/* CONFIG_H */
