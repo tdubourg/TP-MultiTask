@@ -12,6 +12,9 @@
 
 //*custom ... 
 #include "Config.h"
+#include <fcntl.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 void entree(int porte_num);

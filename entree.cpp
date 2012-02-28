@@ -1,3 +1,5 @@
+#include <bits/fcntl.h>
+
 #include "entree.h"
 
 void entree(int porte_num) {
@@ -13,4 +15,11 @@ void entree(int porte_num) {
 	    cname = CANAL_KEY_ENTREE_GB;
 	    break;
     }
+    int desc = open(cname, O_RDONLY);
+    if (desc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
+	return;
+    }
+    int valeur;
+    read(desc, &valeur, sizeof (unsigned int));
+    close(desc);
 }
