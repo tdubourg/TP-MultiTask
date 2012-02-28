@@ -8,7 +8,17 @@
 #ifndef AFFICHAGESORTIE_H
 #define	AFFICHAGESORTIE_H
 
-#include "sortie.h"
+#include <signal.h>
+#include <fcntl.h>
+#include <semaphore.h>
+#include <sys/shm.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include "Outils.h"
+#include "Config.h"
+
+void affichageSortie(unsigned int place);
 
 #endif	/* AFFICHAGESORTIE_H */
 

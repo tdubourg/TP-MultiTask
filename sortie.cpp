@@ -49,23 +49,15 @@ void Sortie()
     
     //------------------------------------Moteur--------------------------------------- 
     unsigned int place;
-    int nbPlaces;
     int noAffSortie;
     
     for (;;)
     {
     read (canalKeySortie, &place, sizeof(unsigned int)); //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau
-    
-    sem_wait(semPtShmCompteur); //On prend possession de la mémoire partagée servant à compter le nombre de place dans le parking, sinon, on attend qu'elle soit disponible
-    
-    nbPlaces = *shmPtCompteur;
-    *shmPtCompteur = (nbPlaces + 1);
-    
-    sem_post(semPtShmCompteur); //On restitue l'accès à la mémoire partagée
-    
+
      if((noAffSortie = fork ()) == 0){
         //Code du fils affichageSortie
-         
+         affichageSortie (place);
          exit(0);
     }
     

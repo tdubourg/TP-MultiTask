@@ -17,6 +17,7 @@
 
 #include "Outils.h"
 #include "Config.h"
+#include "affichageSortie.h"
 
 void Sortie();
 

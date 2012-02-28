@@ -27,7 +27,7 @@ int main (int argc, char** argv){
     int shmIdCompteur;
     int shmIdRequetes;
 
-    int* shmPtCompteur;
+    unsigned int* shmPtCompteur;
     requete* shmPtRequetes;
 
     sem_t* semPtEntreeGB; //sémaphore de synchronisation pour l'entrée Gaston Berger
@@ -69,10 +69,10 @@ int main (int argc, char** argv){
     if(!error && (shmIdRequetes = shmget (CLEF_REQUETES, sizeof(requete) * NB_PORTES, 0666 | IPC_CREAT)) < 0){
         error = true;
     }
-    if(!error && (shmPtCompteur = (int*) shmat (shmIdCompteur, NULL, 0)) == NULL){
+    if(!error && (shmPtCompteur = (unsigned int*) shmat (shmIdCompteur, NULL, 0)) == NULL){
         error = true;
     }
-    else{
+    else if (!error){
         *shmPtCompteur = CAPACITE_PARKING;
     }
     /*/if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
