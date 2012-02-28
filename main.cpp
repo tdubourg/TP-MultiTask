@@ -128,7 +128,7 @@ int main (int argc, char** argv){
     else if(noHeure == -1){
         error = true;
     }
-    else if((noEntreeGB = fork ()) == 0){
+    else if((noEntreeGB = fork ()) == 0) {
         //Code du fils entree Gaston Berger
         entree (ENTREE_GB);
     }

@@ -15,6 +15,8 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
+
 
 #include "Menu.h"
 #include "Config.h"

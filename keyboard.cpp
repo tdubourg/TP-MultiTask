@@ -2,7 +2,15 @@
 
 using namespace std;
 
+static void FinProgramme(int signum) {
+	exit(EXIT_CODE);
+}
+
 void keyboard() {
+	//Association du signal SIGUSR2 à  la fin du programme
+	struct sigaction action;
+	action.sa_handler = FinProgramme;
+	sigaction(SIGUSR2, &action, NULL);
 	for (;;) {
 		Menu();
 	}
@@ -28,11 +36,23 @@ void pousserVoitureVersEntree(char code, unsigned int valeur) {
 	}
 
 	// @TODO : Improve that (opening)
+#ifdef MAP
+	f << "Debut d'ouverture du canal" << std::endl;
+#endif
 	int desc = open(cname, O_WRONLY);
+#ifdef MAP
+	f << "Fin d'ouverture du canal" << std::endl;
+#endif
 	if (desc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
 		return;
 	}
+#ifdef MAP
+	f << "Debut d'écriture sur le canal" << std::endl;
+#endif
 	write(desc, &valeur, sizeof (unsigned int));
+#ifdef MAP
+	f << "Fin d'écriture sur le canal" << std::endl;
+#endif
 	close(desc);
 #ifdef MAP
 	f.close();

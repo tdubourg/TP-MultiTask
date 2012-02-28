@@ -35,7 +35,7 @@ typedef struct r
 } requete ; 
 
 
-//#define MAP
+#define MAP
 
 #ifdef MAP
 //* Debugging purposes :

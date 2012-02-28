@@ -2,24 +2,37 @@
 
 void entree(int porte_num) {
 #ifdef MAP
+	//cout << "Pouet";
 	std::stringstream fname_tmp;
 	fname_tmp << "entree" << porte_num << ".log";
 	std::string fname = fname_tmp.str();
 	std::ofstream f(fname.c_str());
-	f << "Lancement de Entrée avec porte_num = " << porte_num;
+	f << "Lancement de Entrée avec porte_num = ";
+	f << porte_num << std::endl;
 #endif
-	
+
+#ifdef MAP
+	f << "DEBUT récupération des mémoires partagées" << std::endl;
+#endif
 	int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | 0);
 	requete *shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
 	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | 0);
 	int * shmPtCompteur = (int *) shmat(shmIdCompteur, NULL, 0);
 	sem_t* semPtShmCompteur;
 	sem_t* semPtEntree;
+#ifdef MAP
+	f << "FIN récupération des mémoires partagées" << std::endl;
+#endif
 
 	//* On essaie d'ouvrir le sema, si ça marche pas, on réessaie ! Car de toutes façons, le programme ne peut pas fonctionner
 	//* Sans ce sémaphore, attendons donc que qq'un l'initialise !
-	while ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 0)) != SEM_FAILED);
-
+#ifdef MAP
+	f << "DEBUT récupération du séma pour Compteur" << std::endl;
+#endif
+	while ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
+#ifdef MAP
+	f << "FIN récupération du séma pour Compteur" << std::endl;
+#endif
 	const char *cname;
 	TypeBarriere barriere;
 	const char * sem_key;
@@ -40,19 +53,29 @@ void entree(int porte_num) {
 			sem_key = SEM_ENTREE_GB;
 			break;
 	}
-	while ((semPtEntree = sem_open(sem_key, 0, 0666, 0)) != SEM_FAILED);
-
-
+#ifdef MAP
+	f << "DEBUT récupération du séma pour Compteur" << std::endl;
+#endif
+	while ((semPtEntree = sem_open(sem_key, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
+#ifdef MAP
+	f << "FIN récupération du séma pour Compteur" << std::endl;
+#endif
+#ifdef MAP
+	f << "Debut d'ouverture du canal " << cname << endl;
+#endif
 	int desc = open(cname, O_RDONLY);
+#ifdef MAP
+	f << "Fin d'ouverture du canal " << cname << endl;
+#endif
 	if (desc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
 		return;
 	}
 	int valeur;
 
 #ifdef MAP
-		f << "Entrée : Debut de lecture du canal" << std::endl;
+	f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
-		
+
 	while (read(desc, &valeur, sizeof (unsigned int))) {
 #ifdef MAP
 		f << "Valeur lue sur le canal :" << valeur << std::endl;
