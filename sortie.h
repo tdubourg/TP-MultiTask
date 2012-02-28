@@ -12,7 +12,10 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <sys/shm.h>
+#include <sys/types.h>
+#include <unistd.h>
 
+#include "Outils.h"
 #include "Config.h"
 
 void Sortie();

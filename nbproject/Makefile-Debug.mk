@@ -34,6 +34,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/affichageSortie.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/entree.o \
 	${OBJECTDIR}/keyboard.o \
@@ -67,6 +68,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask: /usr/lib/libtcl.so
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tp-multitask ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/affichageSortie.o: affichageSortie.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/affichageSortie.o affichageSortie.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
