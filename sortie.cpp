@@ -5,7 +5,7 @@ using namespace std;
 
 static void FinProgramme(int signum)
 {
-    
+    exit(0);
 }
 
 void Sortie()
