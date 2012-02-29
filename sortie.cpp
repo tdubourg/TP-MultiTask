@@ -2,7 +2,11 @@
 
 using namespace std;
 
+
+static int noAffSortie;
+
 static void FinProgramme(int signum) {
+	kill(noAffSortie, SIGUSR2);
 	exit(0);
 }
 
@@ -25,7 +29,7 @@ void Sortie() {
 
 	//------------------------------------Moteur--------------------------------------- 
 	unsigned int place;
-	int noAffSortie;
+	//int noAffSortie;
 
 	for (;;) {
 		read(canalKeySortie, &place, sizeof (unsigned int)); //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau
