@@ -28,12 +28,23 @@
 
 #define CAPACITE_PARKING 8
 
+#define EXIT_CODE 0
+
+
+#include "Outils.h"
+
+
 typedef struct r
 {
-    char type;
+    TypeUsager type;
     int arrivee;
 } requete ; 
 
+
+typedef struct v {
+    unsigned int id;
+    TypeUsager type;
+} voiture;
 
 #define MAP
 

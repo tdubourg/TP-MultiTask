@@ -15,10 +15,15 @@
 #include <unistd.h>
 #include <sys/shm.h>
 #include <semaphore.h>
+#include <signal.h>
+#include <vector>
+#include <sys/wait.h>
 
 //*custom ... 
 #include "Config.h"
 #include "Outils.h"
+
+typedef std::vector<pid_t> pidvect;
 
 #ifdef MAP
 #include <fstream>

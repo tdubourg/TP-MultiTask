@@ -7,7 +7,7 @@ static void FinProgramme(int signum) {
 }
 
 void keyboard() {
-	//Association du signal SIGUSR2 à  la fin du programme
+	//Association du signal SIGUSR2 à la fin du programme
 	struct sigaction action;
 	action.sa_handler = FinProgramme;
 	sigaction(SIGUSR2, &action, NULL);
@@ -16,10 +16,11 @@ void keyboard() {
 	}
 }
 
-void pousserVoitureVersEntree(char code, unsigned int valeur) {
+void pousserVoitureVersEntree(TypeUsager usager, unsigned int valeur) {
+	static unsigned int voituresId = 0;
 #ifdef MAP
 	std::ofstream f("debug_kb_canalw.log");
-	f << "pousserVoitureVersEntree() lancée avec : code=" << code << ", valeur=" << valeur << std::endl;
+	f << "pousserVoitureVersEntree() lancée avec : valeur=" << valeur << std::endl;
 #endif
 	const char *cname;
 
@@ -49,7 +50,10 @@ void pousserVoitureVersEntree(char code, unsigned int valeur) {
 #ifdef MAP
 	f << "Debut d'écriture sur le canal" << std::endl;
 #endif
-	write(desc, &valeur, sizeof (unsigned int));
+	voiture tuture;
+	tuture.id = ++voituresId;
+	tuture.type = usager;
+	write(desc, &tuture, sizeof (voiture));
 #ifdef MAP
 	f << "Fin d'écriture sur le canal" << std::endl;
 #endif
@@ -64,6 +68,7 @@ void Commande(char code, unsigned int valeur) {
 	std::ofstream f("debug_kb1.log");
 	f << "Commande() lancée avec : code=" << code << ", valeur=" << valeur << std::endl;
 #endif
+	TypeUsager usager = AUCUN;
 	switch (code) {
 		case 'E':
 #ifdef MAP
@@ -73,14 +78,18 @@ void Commande(char code, unsigned int valeur) {
 			break;
 
 		case 'P':
+			usager = PROF;
 		case 'A':
-		case 'S':
+			if(usager == AUCUN) {//* Sert à ce que, quand c'est "P" la valeur ne soit pas écrasée
+				usager = AUTRE;
+			}
 			//* valeur = n° de la porte (0,1,2)
-			char* cname;
 #ifdef MAP
 			f << "Commande reconnue, lancement de pousserVoitureVersEntree" << std::endl;
 #endif
-			pousserVoitureVersEntree(code, valeur);
+			pousserVoitureVersEntree(usager, valeur);
+			break;
+		case 'S':
 			break;
 	}
 #ifdef MAP

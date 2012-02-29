@@ -21,7 +21,6 @@
 #include "Menu.h"
 #include "Config.h"
 
-#define EXIT_CODE 0
 void keyboard();
 void Commande(char code, unsigned int valeur);
 
