@@ -18,13 +18,6 @@ void affichageSortie(unsigned int place)
     action.sa_handler = FinProgramme;
     sigaction(SIGUSR2, &action, NULL);
     
-    //Ouverture du canal de communication en lecture
-    int canalKeySortie = open (CANAL_KEY_SORTIE, O_RDONLY);
-    if (canalKeySortie == -1)
-    {
-	error = true;
-    }   
-    
     //Ouverture des sémaphore de protection 
     sem_t* semPtShmCompteur;
     sem_t* semPtShmRequete;
@@ -47,6 +40,8 @@ void affichageSortie(unsigned int place)
     
     //------------------------------------Moteur--------------------------------------- 
     int nbPlaces;
+    
+    SortirVoiture (place);
     
     sem_wait(semPtShmCompteur); //On prend possession de la mémoire partagée servant à compter le nombre de place dans le parking, sinon, on attend qu'elle soit disponible
     
