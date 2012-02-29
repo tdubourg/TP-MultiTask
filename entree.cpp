@@ -2,11 +2,12 @@
 
 static pidvect tachesFilles;
 static pid_t pidAttenteFinGarage;
+static int PorteNum;
 
 static void FinProgramme(int signum) {
 #ifdef MAP
 	std::ofstream f("entree_finprog.log", ios_base::app);
-	f << "Lancement de FinProgramme pour une Entrée." << std::endl;
+	f << "Lancement de FinProgramme pour Entrée" << PorteNum << std::endl;
 	f << "Début du massacre des tâches filles." << std::endl;
 #endif
 	//* Dabord, on tue toutes les tâches filles :
@@ -31,11 +32,11 @@ static void FinAttenteFinGarage(int signum) {
 	//* On tue la tâche fille puis on se termine :
 #ifdef MAP
 	std::ofstream f("entree_FinAttenteFinGarage.log", ios_base::app);
-	f << "Lancement de FinAttenteFinGarage pour une Entrée." << std::endl;
+	f << "FinAttenteFinGarage: Lancement de FinAttenteFinGarage pour une Entrée." << std::endl;
 #endif
 	kill(pidAttenteFinGarage, SIGUSR2);
 #ifdef MAP
-	f << "Envoi de SIGUSR2 à " << pidAttenteFinGarage << std::endl;
+	f << "FinAttenteFinGarage: Envoi de SIGUSR2 à " << pidAttenteFinGarage << " effectué." << std::endl;
 	f.close();
 #endif
 }
@@ -43,16 +44,19 @@ static void FinAttenteFinGarage(int signum) {
 void entreeAttenteFinGarage(pid_t pidGarage, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
 #ifdef MAP
 	std::ofstream f("entree_entreeAttenteFinGarage.log", ios_base::app);
-	f << "Début d'une entreeAttenteFinGarage sur le pid " << pidGarage << std::endl;
+	f << "entreeAttenteFinGarage: Début d'une entreeAttenteFinGarage sur le pid " << pidGarage << std::endl;
 #endif
 	pidAttenteFinGarage = pidGarage;
 	struct sigaction action;
 	action.sa_handler = FinAttenteFinGarage;
 	sigaction(SIGUSR2, &action, NULL);
 	int st = -1;
+#ifdef MAP
+	f << "entreeAttenteFinGarage : Début d'attente de la fin de la tâche fille GarerVoiture() ayant le pid " << pidGarage << std::endl;
+#endif
 	do {
 		waitpid(pidGarage, &st, 0); //Attend la fin de la tache fille GarerVoiture()
-	} while (st != 0);
+	} while (st != -1);
 #ifdef MAP
 	f << "entreeAttenteFinGarage : fin de la tâche fille " << pidGarage << ", lancement de l'affichage" << std::endl;
 #endif
@@ -73,6 +77,7 @@ void entree(int porte_num) {
 	f << "Lancement de Entrée avec porte_num = ";
 	f << porte_num << std::endl;
 #endif
+	PorteNum = porte_num;
 
 	//Association du signal SIGUSR2 à  la fin du programme
 	struct sigaction action;
