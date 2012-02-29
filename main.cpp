@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
 
 	int shmIdCompteur;
 	int shmIdRequetes;
+        int shmIdParking;
 
 	unsigned int* shmPtCompteur;
 	requete* shmPtRequetes;
@@ -38,6 +39,7 @@ int main(int argc, char** argv) {
 	sem_t* semPtEntreeBPA; //sémaphore de synchronisation pour l'entrée Blaise Pascal (Autre)
 	sem_t* semPtShmCompteur; //sémaphore de protection de la mémoire partagée "compteur"
 	sem_t* semPtShmRequete; //sémaphore de protection de la mémoire partagée "requete"
+        sem_t* semPtShmParking; //sémaphore de protection de la mémoire partagée "parking"
 
 	//masquages des signaux
 	struct sigaction action;
@@ -81,6 +83,9 @@ int main(int argc, char** argv) {
 	if (!error && (shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | IPC_CREAT)) < 0) {
 		error = true;
 	}
+        if (!error && (shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666 | IPC_CREAT)) < 0) {
+		error = true;
+	}
 	if (!error && (shmPtCompteur = (unsigned int*) shmat(shmIdCompteur, NULL, 0)) == NULL) {
 		error = true;
 	} else if (!error) {
@@ -110,6 +115,9 @@ int main(int argc, char** argv) {
 		error = true;
 	}
 	if (!error && (semPtShmRequete = sem_open(SEM_SHM_REQUETE, O_CREAT, 0666, 1)) == SEM_FAILED) {
+		error = true;
+	}
+        if (!error && (semPtShmParking = sem_open(SEM_SHM_PARKING, O_CREAT, 0666, 1)) == SEM_FAILED) {
 		error = true;
 	}
 

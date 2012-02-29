@@ -21,10 +21,12 @@
 #define SEM_ENTREE_BP_A "/entree_BPA"
 #define SEM_SHM_COMPTEUR "/compteur"
 #define SEM_SHM_REQUETE "/requete"
+#define SEM_SHM_PARKING "/parking"
 #define NB_PORTES 3
 
 #define CLEF_COMPTEUR 11111
 #define CLEF_REQUETES 22222
+#define CLEF_PARKING 33333
 
 #define CAPACITE_PARKING 8
 
@@ -38,7 +40,7 @@ typedef struct r
 {
     TypeUsager type;
     int arrivee;
-} requete ; 
+} requete ;
 
 
 typedef struct v {

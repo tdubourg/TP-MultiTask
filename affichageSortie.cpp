@@ -41,12 +41,12 @@ void affichageSortie(unsigned int place)
     //------------------------------------Moteur--------------------------------------- 
     int nbPlaces;
     
+    SortirVoiture (place);
+    
     sem_wait(semPtShmCompteur); //On prend possession de la mémoire partagée servant à compter le nombre de place dans le parking, sinon, on attend qu'elle soit disponible
     
     nbPlaces = *shmPtCompteur;
     *shmPtCompteur = (nbPlaces + 1);
     
     sem_post(semPtShmCompteur); //On restitue l'accès à la mémoire partagée
-    
-    SortirVoiture (place);
 }
