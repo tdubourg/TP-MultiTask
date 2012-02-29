@@ -2,7 +2,8 @@
 
 static pidvect tachesFilles;
 static pid_t pidAttenteFinGarage;
-static int PorteNum;
+static int PorteNum = -1;
+static int canalDesc = -1;
 
 static void FinProgramme(int signum) {
 #ifdef MAP
@@ -19,26 +20,34 @@ static void FinProgramme(int signum) {
 #endif
 	}
 #ifdef MAP
-	f << "Fin du massacre des tâches filles. Exiting " << std::endl;
+	f << "Fin du massacre des tâches filles." << std::endl;
+	f << "FinProgramme (entrée=" << PorteNum << " début de fermeture des canaux" << std::endl;
+#endif
+	if(canalDesc != -1) {
+		close(canalDesc);
+	}
+	
+#ifdef MAP
+	f << "FinProgramme (entrée=" << PorteNum << "Fin de fermeture des canaux" << std::endl;
+	f.close();
 #endif
 	exit(EXIT_CODE);
 }
 
-/*static void FinGarage(int signum) {
-	AfficherPlace ( unsigned int numPlace, TypeUsager usager,
-					 unsigned int numVoiture, time_t arrivee );
-}*/
 static void FinAttenteFinGarage(int signum) {
 	//* On tue la tâche fille puis on se termine :
 #ifdef MAP
 	std::ofstream f("entree_FinAttenteFinGarage.log", ios_base::app);
-	f << "FinAttenteFinGarage: Lancement de FinAttenteFinGarage pour une Entrée." << std::endl;
+	f << "FinAttenteFinGarage: Lancement de FinAttenteFinGarage pour une Entrée (porte_num=" << PorteNum << "). Pid=" << pidAttenteFinGarage << std::endl;
 #endif
-	kill(pidAttenteFinGarage, SIGUSR2);
+	
+	int ret = kill(pidAttenteFinGarage, SIGUSR2);
+	
 #ifdef MAP
-	f << "FinAttenteFinGarage: Envoi de SIGUSR2 à " << pidAttenteFinGarage << " effectué." << std::endl;
+	f << "FinAttenteFinGarage: Envoi de SIGUSR2 à " << pidAttenteFinGarage << " effectué. Code retour = " << ret << ". Errno=" << errno << std::endl;
 	f.close();
 #endif
+	exit(EXIT_CODE);
 }
 
 void entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
@@ -59,22 +68,29 @@ void entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arr
 	struct sigaction action;
 	action.sa_handler = FinAttenteFinGarage;
 	sigaction(SIGUSR2, &action, NULL);
-
-	int st = -1;
+	
 #ifdef MAP
 	f << "entreeAttenteFinGarage : Début d'attente de la fin de la tâche fille GarerVoiture() ayant le pid " << pidGarage << std::endl;
 #endif
+	
+	int st = -1;
 	do {
 		waitpid(pidGarage, &st, 0); //Attend la fin de la tache fille GarerVoiture()
 #ifdef MAP
 		f << "entreeAttenteFinGarage (pid=" << pidGarage << ") : Status reçu=" << st << std::endl;
 #endif
 	} while (st < 0);
+	//* Transforming status to the place number :
+	unsigned char place = (st& 0xFF00)>>8;
+	
+	
 #ifdef MAP
-	f << "entreeAttenteFinGarage : fin de la tâche fille " << pidGarage << " avec le status " << st << ", lancement de l'affichage" << std::endl;
+	f << "entreeAttenteFinGarage : fin de la tâche fille " << pidGarage << " avec le status " << st << "correspondant à la place " << place <<", lancement de l'affichage" << std::endl;
 #endif
+	
 	//* Une fois celle-ci terminée, on affiche la place où elle s'est garée :
-	AfficherPlace(st, usager, numVoiture, arrivee);
+	AfficherPlace(place, usager, numVoiture, arrivee);
+	
 #ifdef MAP
 	f.close();
 #endif
@@ -149,11 +165,11 @@ void entree(int porte_num) {
 #ifdef MAP
 	f << "Debut d'ouverture du canal " << cname << endl;
 #endif
-	int desc = open(cname, O_RDONLY);
+	canalDesc = open(cname, O_RDONLY);
 #ifdef MAP
 	f << "Fin d'ouverture du canal " << cname << endl;
 #endif
-	if (desc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
+	if (canalDesc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
 		return;
 	}
 
@@ -162,7 +178,7 @@ void entree(int porte_num) {
 	f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
 	voiture tuture;
-	while (read(desc, &tuture, sizeof (voiture))) {
+	while (read(canalDesc, &tuture, sizeof (voiture))) {
 #ifdef MAP
 		f << "Valeur lue sur le canal : voiture id=" << tuture.id << std::endl;
 #endif
@@ -178,7 +194,7 @@ void entree(int porte_num) {
 			pid_t noFille;
 			if ((noFille = fork()) == 0) {
 				//* Code de la fille qui attend la fin de GarerVoiture
-				entreeAttenteFinGarage(barriere, tuture.type, (int) time(NULL), 0); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
+				entreeAttenteFinGarage(barriere, tuture.type, time(NULL), 0); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
 				// @TODO : Gérer les temps d'arrivée correctement : keyboard doit les foutre en mémoire
 				// partagée afin qu'ils soient récupéré par l'entrée, la sortie, etc. ... 
 				exit(EXIT_CODE);
@@ -191,6 +207,8 @@ void entree(int porte_num) {
 			req.arrivee = (int) time(NULL);
 			req.type = tuture.type;
 			shmPtRequetes[porte_num] = req;
+			//* On affiche cette requête :
+			AfficherRequete (barriere, tuture.type, time(NULL));
 			//* Puis on attends l'autorisation de faire entrer la voiture :
 			sem_wait(semPtEntree);
 		}
@@ -198,5 +216,6 @@ void entree(int porte_num) {
 #ifdef MAP
 	f.close();
 #endif
-	close(desc);
+	//* If, for any reason, we get here, make sure everything closes properly :
+	FinProgramme(0);
 }

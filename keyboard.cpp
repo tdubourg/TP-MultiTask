@@ -49,6 +49,8 @@ void keyboard() {
 	for (;;) {
 		Menu();
 	}
+	//* If, for any reason, we get here, make sure everything closes properly :
+	FinProgramme(0);
 }
 
 void pousserVoitureVersSortie(unsigned int valeur) {

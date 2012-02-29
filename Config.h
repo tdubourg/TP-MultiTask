@@ -60,6 +60,7 @@ typedef struct v {
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <errno.h>
 #endif
 
 #endif	/* CONFIG_H */
