@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
 	int shmIdCompteur;
 	int shmIdRequetes;
-        int shmIdParking;
+	int shmIdParking;
 
 	unsigned int* shmPtCompteur;
 	requete* shmPtRequetes;
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 	sem_t* semPtEntreeBPA; //sémaphore de synchronisation pour l'entrée Blaise Pascal (Autre)
 	sem_t* semPtShmCompteur; //sémaphore de protection de la mémoire partagée "compteur"
 	sem_t* semPtShmRequete; //sémaphore de protection de la mémoire partagée "requete"
-        sem_t* semPtShmParking; //sémaphore de protection de la mémoire partagée "parking"
+	sem_t* semPtShmParking; //sémaphore de protection de la mémoire partagée "parking"
 
 	//masquages des signaux
 	struct sigaction action;
@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
 	if (!error && (shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | IPC_CREAT)) < 0) {
 		error = true;
 	}
-        if (!error && (shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666 | IPC_CREAT)) < 0) {
+	if (!error && (shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666 | IPC_CREAT)) < 0) {
 		error = true;
 	}
 	if (!error && (shmPtCompteur = (unsigned int*) shmat(shmIdCompteur, NULL, 0)) == NULL) {
@@ -91,14 +91,6 @@ int main(int argc, char** argv) {
 	} else if (!error) {
 		*shmPtCompteur = CAPACITE_PARKING;
 	}
-	/*/if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
-		error = true;
-	}/* abandopnné else { //* Initialisation du tableau à NULL pour qu'on puisse savoir s'il y a déjà qqchose dedans ou pas quand on le manipule par la suite
-			shmPtRequetes = (requete**)shmPtRequetes;
-			for(int i = 0; i < NB_PORTES; i++) {
-				shmPtRequetes[i] = NULL;
-			}
-		}*/
 
 
 	//Création des sémaphores
@@ -117,7 +109,7 @@ int main(int argc, char** argv) {
 	if (!error && (semPtShmRequete = sem_open(SEM_SHM_REQUETE, O_CREAT, 0666, 1)) == SEM_FAILED) {
 		error = true;
 	}
-        if (!error && (semPtShmParking = sem_open(SEM_SHM_PARKING, O_CREAT, 0666, 1)) == SEM_FAILED) {
+	if (!error && (semPtShmParking = sem_open(SEM_SHM_PARKING, O_CREAT, 0666, 1)) == SEM_FAILED) {
 		error = true;
 	}
 
@@ -175,25 +167,30 @@ int main(int argc, char** argv) {
 		 * afin de détruire les canaux (car il faut qu'il n'y ait plus ni écrivains ni lecteurs du le canal
 		 * avant de le fermer
 		 */
+		st = -1;
 		kill(noEntreeBPA, SIGUSR2);
 		do {
 			waitpid(noEntreeBPA, &st, 0);
 		} while (st != 0);
+		st = -1;
 		kill(noEntreeBPP, SIGUSR2);
 		do {
 			waitpid(noEntreeBPP, &st, 0);
 		} while (st != 0);
 
+		st = -1;
 		kill(noEntreeGB, SIGUSR2);
 		do {
 			waitpid(noEntreeGB, &st, 0);
 		} while (st != 0);
 
+		st = -1;
 		kill(noHeure, SIGUSR2);
 		do {
 			waitpid(noHeure, &st, 0);
 		} while (st != 0);
 
+		st = -1;
 		kill(noSortie, SIGUSR2);
 		do {
 			waitpid(noSortie, &st, 0);
