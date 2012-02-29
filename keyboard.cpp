@@ -1,19 +1,71 @@
 #include "keyboard.h"
 
+static int descGB;
+static int descBPP;
+static int descBPA;
+static int descS;
+
 using namespace std;
 
 static void FinProgramme(int signum) {
+	if(descGB != -1) {
+		close(descGB);
+	}
+	if(descBPP != -1) {
+		close(descBPP);
+	}
+	if(descBPA != -1) {
+		close(descBPA);
+	}
+	if(descS != -1) {
+		close(descS);
+	}
 	exit(EXIT_CODE);
 }
 
+
 void keyboard() {
+#ifdef MAP
+	std::ofstream f("keyboard.log", ios_base::app);
+	f << "Début de keyboard" << std::endl;
+#endif
 	//Association du signal SIGUSR2 à la fin du programme
 	struct sigaction action;
 	action.sa_handler = FinProgramme;
 	sigaction(SIGUSR2, &action, NULL);
+#ifdef MAP
+	f << "Debut d'ouverture des canaux" << std::endl;
+#endif
+	descGB = open(CANAL_KEY_ENTREE_GB, O_WRONLY);
+	descBPP = open(CANAL_KEY_ENTREE_BP_P, O_WRONLY);
+	descBPA = open(CANAL_KEY_ENTREE_BP_A, O_WRONLY);
+	descS = open(CANAL_KEY_SORTIE, O_WRONLY);
+#ifdef MAP
+	f << "Fin d'ouverture des canaux" << std::endl;
+#endif
+#ifdef MAP
+	f << "Debut d'écriture sur le canal" << std::endl;
+#endif
 	for (;;) {
 		Menu();
 	}
+}
+
+void pousserVoitureVersSortie(unsigned int valeur) {
+#ifdef MAP
+	std::ofstream f("debug_kb_pousserSortie.log");
+	f << "pousserVoitureVersSortie() lancée avec : valeur=" << valeur << std::endl;
+#endif
+#ifdef MAP
+	f << "Debut d'écriture sur le canal" << std::endl;
+#endif
+	write(descS, &valeur, sizeof (unsigned int));
+#ifdef MAP
+	f << "Fin d'écriture sur le canal" << std::endl;
+#endif
+#ifdef MAP
+	f.close();
+#endif
 }
 
 void pousserVoitureVersEntree(TypeUsager usager, unsigned int valeur) {
@@ -22,42 +74,27 @@ void pousserVoitureVersEntree(TypeUsager usager, unsigned int valeur) {
 	std::ofstream f("debug_kb_canalw.log");
 	f << "pousserVoitureVersEntree() lancée avec : valeur=" << valeur << std::endl;
 #endif
-	const char *cname;
+	int canalDesc;
 
 	switch (valeur) {
 		case ENTREE_GB:
-			cname = CANAL_KEY_ENTREE_GB;
+			canalDesc = descGB;
 			break;
 		case ENTREE_P:
-			cname = CANAL_KEY_ENTREE_BP_P;
+			canalDesc = descBPP;
 			break;
 		case ENTREE_A:
-			cname = CANAL_KEY_ENTREE_BP_A;
+			canalDesc = descBPA;
 			break;
 	}
 
-	// @TODO : Improve that (opening)
-#ifdef MAP
-	f << "Debut d'ouverture du canal" << std::endl;
-#endif
-	int desc = open(cname, O_WRONLY);
-#ifdef MAP
-	f << "Fin d'ouverture du canal" << std::endl;
-#endif
-	if (desc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
-		return;
-	}
-#ifdef MAP
-	f << "Debut d'écriture sur le canal" << std::endl;
-#endif
 	voiture tuture;
 	tuture.id = ++voituresId;
 	tuture.type = usager;
-	write(desc, &tuture, sizeof (voiture));
+	write(canalDesc, &tuture, sizeof (voiture));
 #ifdef MAP
 	f << "Fin d'écriture sur le canal" << std::endl;
 #endif
-	close(desc);
 #ifdef MAP
 	f.close();
 #endif
@@ -80,7 +117,7 @@ void Commande(char code, unsigned int valeur) {
 		case 'P':
 			usager = PROF;
 		case 'A':
-			if(usager == AUCUN) {//* Sert à ce que, quand c'est "P" la valeur ne soit pas écrasée
+			if (usager == AUCUN) {//* Sert à ce que, quand c'est "P" la valeur ne soit pas écrasée
 				usager = AUTRE;
 			}
 			//* valeur = n° de la porte (0,1,2)
@@ -90,6 +127,7 @@ void Commande(char code, unsigned int valeur) {
 			pousserVoitureVersEntree(usager, valeur);
 			break;
 		case 'S':
+			pousserVoitureVersSortie(valeur);
 			break;
 	}
 #ifdef MAP
