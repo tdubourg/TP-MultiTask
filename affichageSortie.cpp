@@ -18,13 +18,6 @@ void affichageSortie(unsigned int place)
     action.sa_handler = FinProgramme;
     sigaction(SIGUSR2, &action, NULL);
     
-    //Ouverture du canal de communication en lecture
-    int canalKeySortie = open (CANAL_KEY_SORTIE, O_RDONLY);
-    if (canalKeySortie == -1)
-    {
-	error = true;
-    }   
-    
     //Ouverture des sémaphore de protection 
     sem_t* semPtShmCompteur;
     sem_t* semPtShmRequete;
@@ -54,4 +47,6 @@ void affichageSortie(unsigned int place)
     *shmPtCompteur = (nbPlaces + 1);
     
     sem_post(semPtShmCompteur); //On restitue l'accès à la mémoire partagée
+    
+    SortirVoiture (place);
 }
