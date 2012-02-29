@@ -41,24 +41,37 @@ static void FinAttenteFinGarage(int signum) {
 #endif
 }
 
-void entreeAttenteFinGarage(pid_t pidGarage, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
+void entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
 #ifdef MAP
 	std::ofstream f("entree_entreeAttenteFinGarage.log", ios_base::app);
+#endif
+	pid_t pidGarage = GarerVoiture(barriere);
+	if (pidGarage == -1) {
+#ifdef MAP
+		f << "Erreur, GarerVoiture() a renvoyé '-1' en tant que PID pour la tâche fille." << std::endl;
+#endif
+		return;
+	}
+#ifdef MAP
 	f << "entreeAttenteFinGarage: Début d'une entreeAttenteFinGarage sur le pid " << pidGarage << std::endl;
 #endif
 	pidAttenteFinGarage = pidGarage;
 	struct sigaction action;
 	action.sa_handler = FinAttenteFinGarage;
 	sigaction(SIGUSR2, &action, NULL);
+
 	int st = -1;
 #ifdef MAP
 	f << "entreeAttenteFinGarage : Début d'attente de la fin de la tâche fille GarerVoiture() ayant le pid " << pidGarage << std::endl;
 #endif
 	do {
 		waitpid(pidGarage, &st, 0); //Attend la fin de la tache fille GarerVoiture()
-	} while (st != -1);
 #ifdef MAP
-	f << "entreeAttenteFinGarage : fin de la tâche fille " << pidGarage << ", lancement de l'affichage" << std::endl;
+		f << "entreeAttenteFinGarage (pid=" << pidGarage << ") : Status reçu=" << st << std::endl;
+#endif
+	} while (st < 0);
+#ifdef MAP
+	f << "entreeAttenteFinGarage : fin de la tâche fille " << pidGarage << " avec le status " << st << ", lancement de l'affichage" << std::endl;
 #endif
 	//* Une fois celle-ci terminée, on affiche la place où elle s'est garée :
 	AfficherPlace(st, usager, numVoiture, arrivee);
@@ -143,7 +156,7 @@ void entree(int porte_num) {
 	if (desc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
 		return;
 	}
-	
+
 
 #ifdef MAP
 	f << "Entrée : Debut de lecture du canal" << std::endl;
@@ -160,27 +173,18 @@ void entree(int porte_num) {
 			sem_wait(semPtShmCompteur);
 			*shmPtCompteur -= 1; //* On décrémente le nb de places dispo !
 			sem_post(semPtShmCompteur);
-			pid_t pid = GarerVoiture(barriere);
-			if (pid != -1) {
-				//* Lancement d'une tâche fille d'attente de la fin du garage pour affichage
-#ifdef MAP
-				f << "GarerVoiture() a renvoyé le pid " << pid << std::endl;
-#endif
-				pid_t noFille;
-				if ((noFille = fork()) == 0) {
-					//* Code de la fille qui attend la fin de GarerVoiture
-					entreeAttenteFinGarage(pid, tuture.type, (int) time(NULL), 0);// @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
-					// @TODO : Gérer les temps d'arrivée correctement : keyboard doit les foutre en mémoire
-					// partagée afin qu'ils soient récupéré par l'entrée, la sortie, etc. ... 
-					exit(EXIT_CODE);
-				}
-				tachesFilles.push_back(noFille);
+
+			//* Lancement d'une tâche fille d'attente de la fin du garage pour affichage
+			pid_t noFille;
+			if ((noFille = fork()) == 0) {
+				//* Code de la fille qui attend la fin de GarerVoiture
+				entreeAttenteFinGarage(barriere, tuture.type, (int) time(NULL), 0); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
+				// @TODO : Gérer les temps d'arrivée correctement : keyboard doit les foutre en mémoire
+				// partagée afin qu'ils soient récupéré par l'entrée, la sortie, etc. ... 
+				exit(EXIT_CODE);
 			}
-#ifdef MAP
-			else {
-				f << "Erreur, GarerVoiture() a renvoyé '-1' en tant que PID pour la tâche fille." << std::endl;
-			}
-#endif
+			tachesFilles.push_back(noFille);
+
 		} else {//* Le parking est plein :
 			//* On formule une requête d'entrée :
 			requete req;
