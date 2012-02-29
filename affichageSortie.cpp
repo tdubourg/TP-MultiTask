@@ -37,12 +37,11 @@ void affichageSortie(unsigned int place)
 	sem_t* semPtEntree_BP_P = sem_open(SEM_ENTREE_BP_P, 0, 0666, 0);
     
     //Ouverture des mémoires partagées 
-    int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | IPC_CREAT);
-    int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | IPC_CREAT);
+    int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | 0);
+    int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | 0);
 	int shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666);
     
-	int* shmPtCompteur;
-    shmPtCompteur = (int*) shmat(shmIdCompteur, NULL, 0);
+	int* shmPtCompteur = (int*) shmat(shmIdCompteur, NULL, 0);
 	requete* shmPtRequetes;
     shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
 	requete * shmPtParking;
@@ -65,11 +64,16 @@ void affichageSortie(unsigned int place)
 	f << "Demande de lock sur le semaphore ShmCompteur RÉUSSIE" << std::endl;
 #endif
 	
-	bool isFull = !shmPtCompteur;//* On le fait avant de libérer de la place /!\
-	*shmPtCompteur += 1;
+	bool isFull = !(*shmPtCompteur);//* /!\ On le fait avant de libérer de la place /!\ 
+
+#ifdef MAP
+	f << "Valeur compteur avant incrément : " << *shmPtCompteur << std::endl;
+#endif
+	
+	*shmPtCompteur = (*shmPtCompteur) + 1;
 	
 #ifdef MAP
-	f << "Relâchement du lock sur le semaphore ShmCompteur après décrément. Valeur actuelle :" << *shmPtCompteur << std::endl;
+	f << "Relâchement du lock sur le semaphore ShmCompteur après incrément. Valeur actuelle :" << *shmPtCompteur << std::endl;
 #endif
 	sem_post(semPtShmCompteur); //On restitue l'accès à la mémoire partagée
 	

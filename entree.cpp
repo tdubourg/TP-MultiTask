@@ -85,7 +85,7 @@ void entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arr
 	
 	
 #ifdef MAP
-	f << "entreeAttenteFinGarage : fin de la tâche fille " << pidGarage << " avec le status " << st << "correspondant à la place " << place <<", lancement de l'affichage" << std::endl;
+	f << "entreeAttenteFinGarage : fin de la tâche fille " << pidGarage << " avec le status " << st << "correspondant à la place " << (int)place <<", lancement de l'affichage" << std::endl;
 #endif
 	
 	//* Une fois celle-ci terminée, on affiche la place où elle s'est garée :
@@ -180,8 +180,10 @@ void entree(int porte_num) {
 	voiture tuture;
 	while (read(canalDesc, &tuture, sizeof (voiture))) {
 #ifdef MAP
-		f << "Valeur lue sur le canal : voiture id=" << tuture.id << std::endl;
+		f << "Entrée=" << PorteNum << " : Valeur lue sur le canal : voiture id=" << tuture.id << std::endl;
+		f << "Entrée=" << PorteNum << " : Il y a actuellement " << (*shmPtCompteur) << "places libres dans le parking." << std::endl;
 #endif
+		
 		if ((*shmPtCompteur) > 0) {
 			//* Y'a de la place, on se gare :
 			//* On décrémente le compteur avant :
