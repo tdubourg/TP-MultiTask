@@ -158,14 +158,19 @@ void entree(int porte_num) {
 #ifdef MAP
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
+	
 	while ((semPtEntree = sem_open(sem_key, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
+	
+	
 #ifdef MAP
 	f << "FIN récupération du séma pour Compteur" << std::endl;
 #endif
 #ifdef MAP
 	f << "Debut d'ouverture du canal " << cname << endl;
 #endif
+	
 	canalDesc = open(cname, O_RDONLY);
+	
 #ifdef MAP
 	f << "Fin d'ouverture du canal " << cname << endl;
 #endif
@@ -212,7 +217,31 @@ void entree(int porte_num) {
 			//* On affiche cette requête :
 			AfficherRequete (barriere, tuture.type, time(NULL));
 			//* Puis on attends l'autorisation de faire entrer la voiture :
+#ifdef MAP
+		f << "Entrée=" << PorteNum << " : Mise en attente sur le sémaphore" << std::endl;
+#endif
 			sem_wait(semPtEntree);
+#ifdef MAP
+		f << "Entrée=" << PorteNum << " : Semaphore débloqué !" << std::endl;
+#endif
+			//* Et hop, jolie répétition de code ! @TODO
+			//* Y'a de la place, on se gare :
+			//* On décrémente le compteur avant :
+			//* Avec gestion du sémaphore
+			sem_wait(semPtShmCompteur);
+			*shmPtCompteur -= 1; //* On décrémente le nb de places dispo !
+			sem_post(semPtShmCompteur);
+
+			//* Lancement d'une tâche fille d'attente de la fin du garage pour affichage
+			pid_t noFille;
+			if ((noFille = fork()) == 0) {
+				//* Code de la fille qui attend la fin de GarerVoiture
+				entreeAttenteFinGarage(barriere, tuture.type, time(NULL), 0); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
+				// @TODO : Gérer les temps d'arrivée correctement : keyboard doit les foutre en mémoire
+				// partagée afin qu'ils soient récupéré par l'entrée, la sortie, etc. ... 
+				exit(EXIT_CODE);
+			}
+			tachesFilles.push_back(noFille);
 		}
 	}
 #ifdef MAP

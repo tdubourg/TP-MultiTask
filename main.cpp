@@ -91,6 +91,17 @@ int main(int argc, char** argv) {
 	} else if (!error) {
 		*shmPtCompteur = CAPACITE_PARKING;
 	}
+	if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
+		error = true;
+	} else if (!error) {
+		//* Initializing the tab with empty values !
+		requete rVide;
+		rVide.arrivee = -1;
+		rVide.type = AUCUN;
+		shmPtRequetes[0] = rVide;
+		shmPtRequetes[1] = rVide;
+		shmPtRequetes[2] = rVide;
+	}
 
 
 	//Création des sémaphores

@@ -84,14 +84,25 @@ void affichageSortie(unsigned int place)
 	AfficherSortie (PROF, 2, 2, 2);// @TODO : Implement that !
 	
 	if(isFull) {
+		
+#ifdef MAP
+		f << "SORTIE : Parking was full just before this car exit, so let's check if they are requests to be satisfied." << std::endl;
+#endif
 		sem_t* semPtToUnlock;
 		//* Parcours du tableau des requêtes :
 		sem_wait(semPtShmRequete);
 		if(shmPtRequetes[ENTREE_P].arrivee != -1 && shmPtRequetes[ENTREE_GB].arrivee == -1) {
+
+#ifdef MAP
+			f << "There is a request pending for the Prof Entrance and no request at the GB entrance" << std::endl;
+#endif
 			//* Prof à l'netree prof et à GB y'a personne, le prof doit rentrer :
 			semPtToUnlock = semPtEntree_BP_P;
 		}
-		//* plein d'autres ifs .... 
+		
+		//* plein d'autres ifs .... @TODO
+		
+		//* Débloquage du sema sur les reuuêtes
 		sem_post(semPtShmRequete);
 		//* Débloquage de la porte qui va bien :
 		sem_post(semPtToUnlock);
