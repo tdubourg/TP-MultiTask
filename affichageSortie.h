@@ -14,6 +14,7 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include "Outils.h"
 #include "Config.h"

@@ -3,8 +3,11 @@
 using namespace std;
 
 
+static int noAffSortie;
+
 static void FinProgramme(int signum)
 {
+    kill(noAffSortie, SIGUSR2);
     exit(0);
 }
 
@@ -29,7 +32,7 @@ void Sortie()
     
     //------------------------------------Moteur--------------------------------------- 
     unsigned int place;
-    int noAffSortie;
+    //int noAffSortie;
     
     for (;;)
     {
