@@ -12,6 +12,10 @@ static void FinProgramme(int signum)
 
 void affichageSortie(unsigned int place)
 {
+#ifdef MAP
+	std::ofstream f("affichageSortie.log", ios_base::app);
+	f << "Début de affichageSortie(" << place << ")" << std::endl;
+#endif
     //--------------------------------Initialisation------------------------------------
     
     bool error = false;
@@ -50,12 +54,31 @@ void affichageSortie(unsigned int place)
     
     int st;
     waitpid(noAff, &st, 0);
-    AfficherSortie (PROF, 2, 2, 2);
     
-    sem_wait(semPtShmCompteur); //On prend possession de la mémoire partagée servant à compter le nombre de place dans le parking, sinon, on attend qu'elle soit disponible
-    bool isFull = !shmPtCompteur;//* On le fait avant de libérer de la place /!\
+#ifdef MAP
+	f << "Demande de lock sur le semaphore ShmCompteur" << std::endl;
+#endif
+
+	sem_wait(semPtShmCompteur); //On prend possession de la mémoire partagée servant à compter le nombre de place dans le parking, sinon, on attend qu'elle soit disponible
+
+#ifdef MAP
+	f << "Demande de lock sur le semaphore ShmCompteur RÉUSSIE" << std::endl;
+#endif
+	
+	bool isFull = !shmPtCompteur;//* On le fait avant de libérer de la place /!\
 	*shmPtCompteur += 1;
-    sem_post(semPtShmCompteur); //On restitue l'accès à la mémoire partagée
+	
+#ifdef MAP
+	f << "Relâchement du lock sur le semaphore ShmCompteur après décrément. Valeur actuelle :" << *shmPtCompteur << std::endl;
+#endif
+	sem_post(semPtShmCompteur); //On restitue l'accès à la mémoire partagée
+	
+#ifdef MAP
+	f << "Affichage de la sortie effectuée :" << std::endl;
+#endif
+	
+	AfficherSortie (PROF, 2, 2, 2);// @TODO : Implement that !
+	
 	if(isFull) {
 		sem_t* semPtToUnlock;
 		//* Parcours du tableau des requêtes :
@@ -69,4 +92,9 @@ void affichageSortie(unsigned int place)
 		//* Débloquage de la porte qui va bien :
 		sem_post(semPtToUnlock);
 	}
+#ifdef MAP
+	f.close();
+#endif
+	//* If, for any reason, we get here, make sure everything closes properly :
+	FinProgramme(0);
 }
