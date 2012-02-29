@@ -76,16 +76,18 @@ void pousserVoitureVersEntree(TypeUsager usager, unsigned int valeur) {
 #endif
 	int canalDesc;
 
-	switch (valeur) {
-		case ENTREE_GB:
-			canalDesc = descGB;
-			break;
-		case ENTREE_P:
+	if(usager == PROF) {
+		if(valeur == MENU_CHOICE_PROF_BP) {
 			canalDesc = descBPP;
-			break;
-		case ENTREE_A:
+		} else {
+			canalDesc = descGB;
+		}
+	} else {
+		if(valeur == MENU_CHOICE_AUTRE_BP) {
 			canalDesc = descBPA;
-			break;
+		} else {
+			canalDesc = descGB;
+		}
 	}
 
 	voiture tuture;
