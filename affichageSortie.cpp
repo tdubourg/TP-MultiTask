@@ -34,13 +34,14 @@ void affichageSortie(unsigned int place)
     
     //Ouverture des mémoires partagées 
     int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | IPC_CREAT);
-    requete* shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | IPC_CREAT);
-	requete* shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666);
+    int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | IPC_CREAT);
+	int shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666);
     
 	int* shmPtCompteur;
     shmPtCompteur = (int*) shmat(shmIdCompteur, NULL, 0);
 	requete* shmPtRequetes;
     shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
+	requete * shmPtParking;
     shmPtParking = (requete*) shmat(shmIdParking, NULL, 0);
     
     //------------------------------------Moteur--------------------------------------- 
