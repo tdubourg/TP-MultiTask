@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=TP-MultiTask
+PROJECTNAME=multit
 
 # Active Configuration
 DEFAULTCONF=Debug
