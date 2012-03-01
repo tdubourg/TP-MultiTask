@@ -49,6 +49,15 @@ int main(int argc, char** argv) {
 	sigaction(SIGUSR1, &action, NULL);
 	sigaction(SIGUSR2, &action, NULL);
 
+        //Activation de l'heure
+        if ((noHeure = ActiverHeure()) == -1)
+        {
+            #ifdef MAP
+	f << "fail activer heure" << endl;
+#endif
+            error = true;
+        }
+        
 	//Création des canaux
 #ifdef MAP
 	f << "Beginning creating shared memories" << endl;
@@ -57,7 +66,7 @@ int main(int argc, char** argv) {
 	{
 		error = true;
 #ifdef MAP
-		f << "lol";
+		f << "fail creation canal";
 #endif
 	}
 	if (!error && mkfifo(CANAL_KEY_ENTREE_BP_P, 0666) == -1) //Canal reliant Keyboard et Entree blaise pascal profs
@@ -79,6 +88,9 @@ int main(int argc, char** argv) {
 	//Création des mémoires partagées
 	if (!error && (shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (unsigned int), 0666 | IPC_CREAT)) < 0) {
 		error = true;
+                #ifdef MAP
+	f << "fail creation memoire partagee" << endl;
+#endif
 	}
 	if (!error && (shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | IPC_CREAT)) < 0) {
 		error = true;
@@ -107,6 +119,9 @@ int main(int argc, char** argv) {
 	//Création des sémaphores
 	if (!error && (semPtEntreeGB = sem_open(SEM_ENTREE_GB, O_CREAT, 0666, 0)) == SEM_FAILED) {
 		error = true;
+                #ifdef MAP
+	f << "fail creation semaphore" << endl;
+#endif
 	}
 	if (!error && (semPtEntreeBPA = sem_open(SEM_ENTREE_BP_A, O_CREAT, 0666, 0)) == SEM_FAILED) {
 		error = true;
@@ -129,11 +144,6 @@ int main(int argc, char** argv) {
 		keyboard();
 	} else if (noKeyboard == -1) {
 		error = true;
-	} else if ((noHeure = fork()) == 0) {
-		//Code de l'heure
-		ActiverHeure();
-	} else if (noHeure == -1) {
-		error = true;
 	} else if ((noEntreeGB = fork()) == 0) {
 		//Code du fils entree Gaston Berger
 		entree(ENTREE_GB);
@@ -151,7 +161,7 @@ int main(int argc, char** argv) {
 		error = true;
 	} else if ((noSortie = fork()) == 0) {
 		//Code du fils Sortie
-		Sortie();
+		Sortie();	
 	} else if (noSortie == -1) {
 		error = true;
 	} else {
@@ -183,29 +193,42 @@ int main(int argc, char** argv) {
 		do {
 			waitpid(noEntreeBPA, &st, 0);
 		} while (st != 0);
+                #ifdef MAP
+		f << "BPA has exited" << endl;
+#endif
 		st = -1;
 		kill(noEntreeBPP, SIGUSR2);
 		do {
 			waitpid(noEntreeBPP, &st, 0);
 		} while (st != 0);
 
+                
 		st = -1;
 		kill(noEntreeGB, SIGUSR2);
 		do {
 			waitpid(noEntreeGB, &st, 0);
 		} while (st != 0);
-
+#ifdef MAP
+		f << "GB has exited" << endl;
+#endif
 		st = -1;
 		kill(noHeure, SIGUSR2);
 		do {
 			waitpid(noHeure, &st, 0);
-		} while (st != 0);
+		} while (st < 0);
 
+                #ifdef MAP
+		f << "Heure has exited" << endl;
+#endif
 		st = -1;
 		kill(noSortie, SIGUSR2);
 		do {
 			waitpid(noSortie, &st, 0);
-		} while (st != 0);
+		} while (st < 0);
+                
+                #ifdef MAP
+		f << "Sortie has exited" << endl;
+#endif
 
 		//Destruction des canaux, il est necessaire d'attendre qu'il n'y ai plus de lecteurs ni d'écrivains. 
 		unlink(CANAL_KEY_ENTREE_BP_A);
@@ -213,11 +236,18 @@ int main(int argc, char** argv) {
 		unlink(CANAL_KEY_ENTREE_GB);
 		unlink(CANAL_KEY_SORTIE);
 
+                #ifdef MAP
+		f << "Canaux détruits" << endl;
+#endif
 		//Destruction des mémoires partagées 
 		shmdt(shmPtCompteur);
 		shmctl(shmIdCompteur, IPC_RMID, 0);
 		shmctl(shmIdRequetes, IPC_RMID, 0);
 
+		#ifdef MAP
+		f << "Memoire partagee detruites" << endl;
+#endif
+		
 		//Destruction des sémaphores
 		sem_unlink(SEM_ENTREE_BP_A);
 		sem_unlink(SEM_ENTREE_BP_P);
@@ -225,6 +255,9 @@ int main(int argc, char** argv) {
 		sem_unlink(SEM_SHM_COMPTEUR);
 		sem_unlink(SEM_SHM_REQUETE);
 
+		#ifdef MAP
+		f << "Semaphores détruits" << endl;
+#endif
 		//Suppression de l'écran et de ses protections
 		TerminerApplication();
 	}
