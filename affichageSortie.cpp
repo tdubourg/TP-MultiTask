@@ -2,7 +2,7 @@
 
 using namespace std;
 
-static int noAff;
+static int noAff = -1;
 
 static int* shmPtCompteur;
 static requete* shmPtRequetes;
@@ -17,8 +17,21 @@ static sem_t* semPtEntree_BP_P;
 
 
 static void FinProgramme (int signum){
-	
+	#ifdef MAP
+std::ofstream f ("affichageSortie.log", ios_base::app);
+	f << "on recoie le signal ..." << std::endl;
+#endif
+	if (noAff != -1)
+	{
+		#ifdef MAP
+	f << "on envoie le signal a la fifille" << std::endl;
+#endif
 	kill (noAff, SIGUSR2);
+	int st = -1;
+	do {
+			waitpid(noAff, &st, 0);
+		} while (st != 0);
+	}
 	
 	//Detachement des mémoires partagées 
 	shmdt(shmPtCompteur);
@@ -71,7 +84,9 @@ void affichageSortie (unsigned int place){
 	noAff = SortirVoiture (place);
 
 	int st;
-	waitpid (noAff, &st, 0);
+	do {
+		waitpid (noAff, &st, 0);
+	} while (st < 0);
 
 #ifdef MAP
 	f << "Demande de lock sur le semaphore ShmCompteur" << std::endl;
