@@ -4,8 +4,20 @@ using namespace std;
 
 static int noAff;
 
+static int* shmPtCompteur;
+static requete* shmPtRequetes;
+static requete * shmPtParking;
+
+
 static void FinProgramme (int signum){
+	
 	kill (noAff, SIGUSR2);
+	
+	//Destruction des mémoires partagées 
+	shmdt(shmPtCompteur);
+	shmdt(shmPtRequetes);
+	shmdt(shmPtParking);
+	
 	exit (EXIT_CODE);
 }
 
@@ -37,10 +49,8 @@ void affichageSortie (unsigned int place){
 	int shmIdRequetes = shmget (CLEF_REQUETES, sizeof(requete) * NB_PORTES, 0666 | 0);
 	int shmIdParking = shmget (CLEF_PARKING, sizeof(requete) * CAPACITE_PARKING, 0666);
 
-	int* shmPtCompteur = (int*) shmat (shmIdCompteur, NULL, 0);
-	requete* shmPtRequetes;
+	shmPtCompteur = (int*) shmat (shmIdCompteur, NULL, 0);
 	shmPtRequetes = (requete*) shmat (shmIdRequetes, NULL, 0);
-	requete * shmPtParking;
 	shmPtParking = (requete*) shmat (shmIdParking, NULL, 0);
 
 	//------------------------------------Moteur--------------------------------------- 
