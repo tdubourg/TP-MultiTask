@@ -121,13 +121,14 @@ void entree(int porte_num) {
 #endif
 	int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | 0);
 	requete *shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
-	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | 0);
-	int * shmPtCompteur = (int *) shmat(shmIdCompteur, NULL, 0);
+	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (unsigned int), 0666 | 0);
+	unsigned int * shmPtCompteur = (unsigned int *) shmat(shmIdCompteur, NULL, 0);
 	int shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666 | 0);
 	requete* shmPtParking = (requete*) shmat(shmIdParking, NULL, 0);
 	
 #ifdef MAP
 	f << "FIN récupération des mémoires partagées" << std::endl;
+	f << "Actuellement, il y a " << *shmPtCompteur << " places libres ds le parking." << std::endl;
 #endif
 
 	//* On essaie d'ouvrir le sema, si ça marche pas, on réessaie ! Car de toutes façons, le programme ne peut pas fonctionner
@@ -136,7 +137,7 @@ void entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
 	sem_t* semPtShmCompteur;
-	while ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
+	while ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 1)) == SEM_FAILED); //* bloc vide
 #ifdef MAP
 	f << "FIN récupération du séma pour Compteur" << std::endl;
 #endif
@@ -145,7 +146,7 @@ void entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Parking" << std::endl;
 #endif
 	sem_t* semPtShmParking;
-	while((semPtShmParking = sem_open(SEM_SHM_PARKING, O_CREAT, 0666, 1)) == SEM_FAILED); //* bloc vide
+	while((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 1)) == SEM_FAILED); //* bloc vide
 #ifdef MAP
 	f << "FIN récupération du séma pour Parking" << std::endl;
 #endif
@@ -173,7 +174,7 @@ void entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
 	sem_t* semPtEntree;
-	while ((semPtEntree = sem_open(sem_key, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
+	while ((semPtEntree = sem_open(sem_key, 0, 0666, 1)) == SEM_FAILED); //* bloc vide
 	
 	
 #ifdef MAP
@@ -197,13 +198,19 @@ void entree(int porte_num) {
 	f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
 	voiture tuture;
-	while (read(canalDesc, &tuture, sizeof (voiture))) {
+	for(;;) {//* Phase moteur
+		while (read(canalDesc, &tuture, sizeof (voiture)) <= 0);//* bloc vide, while au cas où on est interrompu par un signal
 		DessinerVoitureBarriere(barriere, tuture.type);
 #ifdef MAP
 		f << "Entrée=" << PorteNum << " : Valeur lue sur le canal : voiture id=" << tuture.id << std::endl;
 		f << "Entrée=" << PorteNum << " : Il y a actuellement " << (*shmPtCompteur) << "places libres dans le parking." << std::endl;
 #endif
 		
+		//* On formule une requête d'entrée :
+		requete req;
+		req.arrivee = (int) time(NULL);
+		req.type = tuture.type;
+		req.plaque = NextVoitureId++;//* @warning : NextVoitureId is incremented here
 		if ((*shmPtCompteur) > 0) {
 			//* Y'a de la place, on se gare :
 			//* On décrémente le compteur avant :
@@ -216,19 +223,12 @@ void entree(int porte_num) {
 			pid_t noFille;
 			if ((noFille = fork()) == 0) {
 				//* Code de la fille qui attend la fin de GarerVoiture
-				entreeAttenteFinGarage(barriere, tuture.type, time(NULL), 0); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
-				// @TODO : Gérer les temps d'arrivée correctement : keyboard doit les foutre en mémoire
-				// partagée afin qu'ils soient récupéré par l'entrée, la sortie, etc. ... 
+				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
 				exit(EXIT_CODE);
 			}
 			tachesFilles.push_back(noFille);
 
 		} else {//* Le parking est plein :
-			//* On formule une requête d'entrée :
-			requete req;
-			req.arrivee = (int) time(NULL);
-			req.type = tuture.type;
-			req.plaque = NextVoitureId++;//* @warning : NextVoitureId is incremented here
 			shmPtRequetes[porte_num] = req;
 			//* On affiche cette requête :
 			AfficherRequete (barriere, tuture.type, req.arrivee);
@@ -253,8 +253,7 @@ void entree(int porte_num) {
 			if ((noFille = fork()) == 0) {
 				//* Code de la fille qui attend la fin de GarerVoiture
 				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
-				// @TODO : Gérer les temps d'arrivée correctement : keyboard doit les foutre en mémoire
-				// partagée afin qu'ils soient récupéré par l'entrée, la sortie, etc. ... 
+				//* On enregistre la voiture dans le parking : 
 				sem_wait(semPtShmParking);
 				shmPtParking[place-1] = req;//* Note : "place" commence à 1 alors que le tableau à 0 !
 				sem_post(semPtShmParking);
