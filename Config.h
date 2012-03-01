@@ -35,6 +35,8 @@
 
 #define CAPACITE_PARKING 8
 
+#define MAX_PLAQUE 999
+
 #define EXIT_CODE 0
 
 

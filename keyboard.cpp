@@ -96,7 +96,11 @@ void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur) {
 	voiture tuture;
 	tuture.id = ++voituresId;
 	tuture.type = usager;
+	if(NextVoitureId > MAX_PLAQUE) {
+		NextVoitureId = 1;
+	}
 	tuture.plaque = NextVoitureId++;//* @warning : NextVoitureId is incremented here
+	
 	write(canalDesc, &tuture, sizeof (voiture));
 #ifdef MAP
 	f << "Fin d'écriture sur le canal" << std::endl;
