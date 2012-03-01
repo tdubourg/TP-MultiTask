@@ -6,13 +6,17 @@ using namespace std;
 std::ofstream f ("debug_main.log");
 #endif
 
-static int noAffSortie = -1;
 static int canalKeySortie = -1;
+static vector<int> noSorties; 
 
 static void FinProgramme (int signum){
-	if(noAffSortie != -1){
-		kill (noAffSortie, SIGUSR2);
+
+	vector<int>::iterator it;
+	for (it = noSorties.begin (); it != noSorties.end(); ++it)
+	{
+		kill ((*it), SIGUSR2);
 	}
+	
 	if(canalKeySortie != -1){
 		close (canalKeySortie);
 	}
@@ -38,11 +42,13 @@ void Sortie (){
 
 	//------------------------------------Moteur--------------------------------------- 
 	unsigned int place;
+	int noAffSortie;
 
 	for(;;){
-		for(;read (canalKeySortie, &place, sizeof(unsigned int)) == 0;);//Bloc vide //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
+		for(;read (canalKeySortie, &place, sizeof(unsigned int)) <= 0;);//Bloc vide //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
 			if((noAffSortie = fork ()) == 0){
 				//Code du fils affichageSortie
+				noSorties.push_back (noAffSortie);
 				affichageSortie (place);
 				exit (0);
 			}
