@@ -70,7 +70,7 @@ void pousserVoitureVersSortie(unsigned int valeur) {
 #endif
 }
 
-void pousserVoitureVersEntree(TypeUsager usager, unsigned int valeur) {
+void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur) {
 	static unsigned int voituresId = 0;
 #ifdef MAP
 	std::ofstream f("debug_kb_canalw.log");
@@ -79,13 +79,13 @@ void pousserVoitureVersEntree(TypeUsager usager, unsigned int valeur) {
 	int canalDesc;
 
 	if(usager == PROF) {
-		if(valeur == MENU_CHOICE_PROF_BP) {
+		if(valeur == PROF_BLAISE_PASCAL) {
 			canalDesc = descBPP;
 		} else {
 			canalDesc = descGB;
 		}
 	} else {
-		if(valeur == MENU_CHOICE_AUTRE_BP) {
+		if(valeur == AUTRE_BLAISE_PASCAL) {
 			canalDesc = descBPA;
 		} else {
 			canalDesc = descGB;
@@ -110,6 +110,7 @@ void Commande(char code, unsigned int valeur) {
 	f << "Commande() lancée avec : code=" << code << ", valeur=" << valeur << std::endl;
 #endif
 	TypeUsager usager = AUCUN;
+	TypeBarriere barriere = AUCUNE;
 	switch (code) {
 		case 'E':
 #ifdef MAP
@@ -120,15 +121,25 @@ void Commande(char code, unsigned int valeur) {
 
 		case 'P':
 			usager = PROF;
+			if(valeur == MENU_CHOICE_PROF_BP) {
+				barriere = PROF_BLAISE_PASCAL;
+			} else {
+				barriere = ENTREE_GASTON_BERGER;
+			}
 		case 'A':
 			if (usager == AUCUN) {//* Sert à ce que, quand c'est "P" la valeur ne soit pas écrasée
 				usager = AUTRE;
+				if(valeur == MENU_CHOICE_AUTRE_BP) {
+					barriere = AUTRE_BLAISE_PASCAL;
+				} else {
+					barriere = ENTREE_GASTON_BERGER;
+				}
 			}
 			//* valeur = n° de la porte (0,1,2)
 #ifdef MAP
 			f << "Commande reconnue, lancement de pousserVoitureVersEntree" << std::endl;
 #endif
-			pousserVoitureVersEntree(usager, valeur);
+			pousserVoitureVersEntree(usager, barriere);
 			break;
 		case 'S':
 			pousserVoitureVersSortie(valeur);
