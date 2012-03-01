@@ -117,7 +117,7 @@ void affichageSortie (unsigned int place){
 	f << "Affichage de la sortie effectuée :" << std::endl;
 #endif
 	
-	switch (place)
+	switch (place)//Effacement des places correspondante à la sortie
 	{
 		case 1:
 			Effacer ( ETAT_P1 );
