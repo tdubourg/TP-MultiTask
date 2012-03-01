@@ -30,7 +30,7 @@ std::ofstream f ("affichageSortie.log", ios_base::app);
 	int st = -1;
 	do {
 			waitpid(noAff, &st, 0);
-		} while (st != 0);
+		} while (st < 0);
 	}
 	
 	//Detachement des mémoires partagées 

@@ -181,7 +181,7 @@ int main(int argc, char** argv) {
 		int st = -1;
 		do {
 			waitpid(noKeyboard, &st, 0); //Attend la fin de la tache fille Keyboard
-		} while (st != 0);
+		} while (st < 0);
 #ifdef MAP
 		f << "Keyboard has exited" << endl;
 #endif
@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 		kill(noEntreeBPA, SIGUSR2);
 		do {
 			waitpid(noEntreeBPA, &st, 0);
-		} while (st != 0);
+		} while (st < 0);
                 #ifdef MAP
 		f << "BPA has exited" << endl;
 #endif
@@ -210,14 +210,14 @@ int main(int argc, char** argv) {
 		kill(noEntreeBPP, SIGUSR2);
 		do {
 			waitpid(noEntreeBPP, &st, 0);
-		} while (st != 0);
+		} while (st < 0);
 
                 
 		st = -1;
 		kill(noEntreeGB, SIGUSR2);
 		do {
 			waitpid(noEntreeGB, &st, 0);
-		} while (st != 0);
+		} while (st < 0);
 #ifdef MAP
 		f << "GB has exited" << endl;
 #endif
