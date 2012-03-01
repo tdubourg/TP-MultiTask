@@ -57,6 +57,9 @@ void Sortie (){
 		for(;read (canalKeySortie, &place, sizeof(unsigned int)) <= 0;);//Bloc vide //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
 			if((noAffSortie = fork ()) == 0){
 				//Code du fils affichageSortie
+#ifdef MAP
+f << "filles de sortie :(affichage sortie) :" << noAffSortie << endl;
+#endif
 				affichageSortie (place);
 				exit (0);
 			}
