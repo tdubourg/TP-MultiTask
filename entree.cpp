@@ -184,6 +184,7 @@ void entree(int porte_num) {
 #endif
 	voiture tuture;
 	while (read(canalDesc, &tuture, sizeof (voiture))) {
+		DessinerVoitureBarriere(barriere, tuture.type);
 #ifdef MAP
 		f << "Entrée=" << PorteNum << " : Valeur lue sur le canal : voiture id=" << tuture.id << std::endl;
 		f << "Entrée=" << PorteNum << " : Il y a actuellement " << (*shmPtCompteur) << "places libres dans le parking." << std::endl;
