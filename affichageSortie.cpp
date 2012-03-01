@@ -116,6 +116,35 @@ void affichageSortie (unsigned int place){
 #ifdef MAP
 	f << "Affichage de la sortie effectuée :" << std::endl;
 #endif
+	
+	switch (place)
+	{
+		case 1:
+			Effacer ( ETAT_P1 );
+			break;
+		case 2:
+			Effacer ( ETAT_P2 );
+			break;
+		case 3:
+			Effacer ( ETAT_P3 );
+			break;
+		case 4:
+			Effacer ( ETAT_P4 );
+			break;
+		case 5:
+			Effacer ( ETAT_P5 );
+			break;
+		case 6:
+			Effacer ( ETAT_P6 );
+			break;
+		case 7:
+			Effacer ( ETAT_P7 );
+			break;
+		case 8:
+			Effacer ( ETAT_P8 );
+			break;
+	}
+	
 	sem_wait (semPtShmParking);
 	AfficherSortie (shmPtParking[place].type, shmPtParking[place].plaque, shmPtParking[place].arrivee, time (NULL));
 	sem_post (semPtShmParking);
