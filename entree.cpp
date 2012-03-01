@@ -4,7 +4,7 @@ static pidvect tachesFilles;
 static pid_t pidAttenteFinGarage;
 static int PorteNum = -1;
 static int canalDesc = -1;
-static unsigned short int NextVoitureId = 1;
+
 
 static void FinProgramme(int signum) {
 #ifdef MAP
@@ -16,6 +16,9 @@ static void FinProgramme(int signum) {
 	pidvect::iterator it;
 	for (it = tachesFilles.begin(); it != tachesFilles.end(); ++it) {
 		int ret = kill(*it, SIGUSR2);
+		if(ret != -1) {
+			waitpid(*it, &ret, 0);
+		}
 #ifdef MAP
 		f << "Tâche fille " << (*it) << "massacrée." << ((!ret) ? "correctement" : "pas correctement") << std::endl;
 #endif
@@ -210,7 +213,7 @@ void entree(int porte_num) {
 		requete req;
 		req.arrivee = (int) time(NULL);
 		req.type = tuture.type;
-		req.plaque = NextVoitureId++;//* @warning : NextVoitureId is incremented here
+		req.plaque = tuture.plaque;
 		if ((*shmPtCompteur) > 0) {
 			//* Y'a de la place, on se gare :
 			//* On décrémente le compteur avant :

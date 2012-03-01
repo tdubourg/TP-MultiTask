@@ -52,6 +52,7 @@ typedef struct r
 typedef struct v {
     unsigned int id;
     TypeUsager type;
+    short int plaque;
 } voiture;
 
 #define MAP

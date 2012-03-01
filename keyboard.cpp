@@ -4,6 +4,7 @@ static int descGB;
 static int descBPP;
 static int descBPA;
 static int descS;
+static unsigned short int NextVoitureId = 1;
 
 using namespace std;
 
@@ -95,6 +96,7 @@ void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur) {
 	voiture tuture;
 	tuture.id = ++voituresId;
 	tuture.type = usager;
+	tuture.plaque = NextVoitureId++;//* @warning : NextVoitureId is incremented here
 	write(canalDesc, &tuture, sizeof (voiture));
 #ifdef MAP
 	f << "Fin d'écriture sur le canal" << std::endl;
