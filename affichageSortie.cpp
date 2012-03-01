@@ -137,10 +137,12 @@ void affichageSortie (unsigned int place){
 				if (shmPtRequetes[ENTREE_P].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si le prof a l'entree Prof est arrive avant l'autre, il rentre
 				{
 					semPtToUnlock = semPtEntree_BP_P;
+					AfficherRequete (PROF_BLAISE_PASCAL, AUCUN, 0);
 				}
 				else //*Sinon, l'autre prof rentre
 				{
 					semPtToUnlock = semPtEntree_GB;
+					AfficherRequete (ENTREE_GASTON_BERGER, AUCUN, 0);
 				}
 			}
 		}
@@ -149,6 +151,7 @@ void affichageSortie (unsigned int place){
 			if (shmPtRequetes[ENTREE_GB].type == PROF) //*... Si il y a un prof a l'entree de tous, il rentre
 			{
 				semPtToUnlock = semPtEntree_GB;
+				AfficherRequete (ENTREE_GASTON_BERGER, AUCUN, 0);
 			}
 			else if (shmPtRequetes[ENTREE_GB].type == AUTRE)//* Si il y a un autre a l'entree de tous ...
 			{
@@ -157,16 +160,19 @@ void affichageSortie (unsigned int place){
 					if (shmPtRequetes[ENTREE_A].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si l'autre a l'entree autre est arrivee avant l'autre a l'entree de tous, il rentre
 					{
 						semPtToUnlock = semPtEntree_BP_A;
+						AfficherRequete (AUTRE_BLAISE_PASCAL, AUCUN, 0);
 					}
 					else //*Sinon, c'est l'autre de l'entree de tous qui rentre
 					{
 						semPtToUnlock = semPtEntree_GB;
+						AfficherRequete (ENTREE_GASTON_BERGER, AUCUN, 0);
 					}
 				}
 			}
 			else //*Sinon, le dernier cas possible etant qu'il y ai seulement un autre a l'entree autre, on le fait rentrer
 			{
 				semPtToUnlock = semPtEntree_BP_A;
+				AfficherRequete (AUTRE_BLAISE_PASCAL, AUCUN, 0);
 			}
 		}
 
