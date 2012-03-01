@@ -83,7 +83,7 @@ void affichageSortie (unsigned int place){
 
 	noAff = SortirVoiture (place);
 
-	int st;
+	int st = -1;
 	do {
 		waitpid (noAff, &st, 0);
 	} while (st < 0);
@@ -130,6 +130,7 @@ void affichageSortie (unsigned int place){
 			if(shmPtRequetes[ENTREE_GB].type != PROF) //*... Et s'il n'y a pas d'autre prof a l'entree de tous, le prof rentre
 			{
 				semPtToUnlock = semPtEntree_BP_P;
+				AfficherRequete (PROF_BLAISE_PASCAL, AUCUN, 0);
 			}
 			else //*... Mais s'il y a un prof a l'entree de tous, le premier arrive doit rentrer
 			{
@@ -168,9 +169,6 @@ void affichageSortie (unsigned int place){
 				semPtToUnlock = semPtEntree_BP_A;
 			}
 		}
-
-
-
 
 		//* Débloquage du sema sur les requêtes
 		sem_post (semPtShmRequete);
