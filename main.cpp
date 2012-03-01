@@ -175,6 +175,14 @@ int main(int argc, char** argv) {
 	} else if (noSortie == -1) {
 		error = true;
 	} else {
+#ifdef MAP
+		f << "Pid créés : " << std::endl;
+		f << "Keyboard : " << noKeyboard << std::endl;
+		f << "Sortie : " << noSortie << std::endl;
+		f << "Entrée BPA : " << noEntreeBPA << std::endl;
+		f << "Entrée BPP : " << noEntreeBPP << std::endl;
+		f << "Entrée GB : " << noEntreeGB << std::endl;
+#endif
 		//Code de la mère
 
 		//---------------------------------------------Moteur-------------------------------------------
