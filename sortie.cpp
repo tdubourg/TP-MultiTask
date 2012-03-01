@@ -23,7 +23,7 @@ f << "envoie signal de kill"<<endl;
 		int st = -1;
 		do {
 				waitpid((*it), &st, 0);
-			} while (st != 0);
+			} while (st < 0);
 	}
 	
 	if(canalKeySortie != -1){
