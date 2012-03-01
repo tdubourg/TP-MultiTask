@@ -82,6 +82,9 @@ void affichageSortie (unsigned int place){
 	//------------------------------------Moteur--------------------------------------- 
 
 	noAff = SortirVoiture (place);
+#ifdef MAP
+f << "lancement d'un sortir voiture avec le pid : " << noAff<< endl;
+#endif
 
 	int st = -1;
 	do {
