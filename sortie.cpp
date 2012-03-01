@@ -3,7 +3,7 @@
 using namespace std;
 
 #ifdef MAP
-std::ofstream f ("debug_main.log");
+std::ofstream f ("debug_sortie.log", ios_base::app);
 #endif
 
 static int canalKeySortie = -1;
