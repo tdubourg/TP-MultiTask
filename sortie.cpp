@@ -4,10 +4,12 @@ using namespace std;
 
 
 static int noAffSortie;
+static int canalKeySortie;
 
 static void FinProgramme(int signum) {
-	kill(noAffSortie, SIGUSR2);
-	exit(0);
+	//kill(noAffSortie, SIGUSR2);
+	close(canalKeySortie);
+	exit(EXIT_CODE);
 }
 
 void Sortie() {
@@ -22,14 +24,13 @@ void Sortie() {
 	sigaction(SIGUSR2, &action, NULL);
 
 	//Ouverture du canal de communication en lecture
-	int canalKeySortie = open(CANAL_KEY_SORTIE, O_RDONLY);
+	canalKeySortie = open(CANAL_KEY_SORTIE, O_RDONLY);
 	if (canalKeySortie == -1) {
 		error = true;
 	}
 
 	//------------------------------------Moteur--------------------------------------- 
 	unsigned int place;
-	//int noAffSortie;
 
 	for (;;) {
 		read(canalKeySortie, &place, sizeof (unsigned int)); //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau
