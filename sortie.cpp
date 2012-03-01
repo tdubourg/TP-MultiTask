@@ -2,17 +2,28 @@
 
 using namespace std;
 
+#ifdef MAP
+std::ofstream f ("debug_main.log");
+#endif
 
-static int noAffSortie;
-static int canalKeySortie;
+static int canalKeySortie = -1;
+static vector<int> noSorties; 
 
-static void FinProgramme(int signum) {
-	//kill(noAffSortie, SIGUSR2);
-	close(canalKeySortie);
-	exit(EXIT_CODE);
+static void FinProgramme (int signum){
+
+	vector<int>::iterator it;
+	for (it = noSorties.begin (); it != noSorties.end(); ++it)
+	{
+		kill ((*it), SIGUSR2);
+	}
+	
+	if(canalKeySortie != -1){
+		close (canalKeySortie);
+	}
+	exit (EXIT_CODE);
 }
 
-void Sortie() {
+void Sortie (){
 
 	//--------------------------------Initialisation------------------------------------
 
@@ -21,26 +32,26 @@ void Sortie() {
 	//Association du signal SIGUSR2 à  la fin du programme
 	struct sigaction action;
 	action.sa_handler = FinProgramme;
-	sigaction(SIGUSR2, &action, NULL);
+	sigaction (SIGUSR2, &action, NULL);
 
 	//Ouverture du canal de communication en lecture
-	canalKeySortie = open(CANAL_KEY_SORTIE, O_RDONLY);
-	if (canalKeySortie == -1) {
+	canalKeySortie = open (CANAL_KEY_SORTIE, O_RDONLY);
+	if(canalKeySortie == -1){
 		error = true;
 	}
 
 	//------------------------------------Moteur--------------------------------------- 
 	unsigned int place;
+	int noAffSortie;
 
-	for (;;) {
-		read(canalKeySortie, &place, sizeof (unsigned int)); //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau
-
-		if ((noAffSortie = fork()) == 0) {
-			//Code du fils affichageSortie
-			affichageSortie(place);
-			exit(0);
-		}
-
+	for(;;){
+		for(;read (canalKeySortie, &place, sizeof(unsigned int)) <= 0;);//Bloc vide //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
+			if((noAffSortie = fork ()) == 0){
+				//Code du fils affichageSortie
+				noSorties.push_back (noAffSortie);
+				affichageSortie (place);
+				exit (0);
+			}
 	}
 
 	//--------------------------------Destruction------------------------------------
