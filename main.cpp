@@ -101,8 +101,18 @@ int main(int argc, char** argv) {
 	if (!error && (shmPtCompteur = (unsigned int*) shmat(shmIdCompteur, NULL, 0)) == NULL) {
 		error = true;
 	} else if (!error) {
+#ifdef MAP
+		f << "Initialisation du Compteur du parking à " << CAPACITE_PARKING << " places" << std::endl;
+#endif
 		*shmPtCompteur = CAPACITE_PARKING;
 	}
+	
+#ifdef MAP
+	else {
+		f << "La réservation de shmPtCompteur a planté" << std::endl;
+	}
+#endif
+	
 	if (!error && (shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0)) == NULL) {
 		error = true;
 	} else if (!error) {
