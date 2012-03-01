@@ -89,6 +89,11 @@ f << "lancement d'un sortir voiture avec le pid : " << noAff<< endl;
 	int st = -1;
 	do {
 		waitpid (noAff, &st, 0);
+	#ifdef MAP
+f << "waitpid(" << noAff << ") status récupéré : " << st << endl;
+#endif
+	
+		
 	} while (st < 0);
 
 #ifdef MAP
