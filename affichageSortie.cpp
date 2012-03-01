@@ -15,37 +15,33 @@ static sem_t* semPtEntree_GB;
 static sem_t* semPtEntree_BP_A;
 static sem_t* semPtEntree_BP_P;
 
-
 static void FinProgramme (int signum){
-	#ifdef MAP
-std::ofstream f ("affichageSortie.log", ios_base::app);
+#ifdef MAP
+	std::ofstream f ("affichageSortie.log", ios_base::app);
 	f << "on recoie le signal ..." << std::endl;
 #endif
-	if (noAff != -1)
-	{
-		#ifdef MAP
-	f << "on envoie le signal a la fifille" << std::endl;
+	if(noAff != -1){
+#ifdef MAP
+		f << "on envoie le signal a la fifille" << std::endl;
 #endif
-	kill (noAff, SIGUSR2);
-	int st = -1;
-	do {
-			waitpid(noAff, &st, 0);
-		} while (st < 0);
+		kill (noAff, SIGUSR2);
+		int st = -1;
+		waitpid (noAff, &st, 0);
 	}
-	
+
 	//Detachement des mémoires partagées 
-	shmdt(shmPtCompteur);
-	shmdt(shmPtRequetes);
-	shmdt(shmPtParking);
-	
+	shmdt (shmPtCompteur);
+	shmdt (shmPtRequetes);
+	shmdt (shmPtParking);
+
 	//Fermeture des semaphore
-	sem_close(semPtEntree_GB);
-	sem_close(semPtEntree_BP_A);
-	sem_close(semPtEntree_BP_P);
-	sem_close(semPtShmCompteur);
-	sem_close(semPtShmParking);
-	sem_close(semPtShmRequete);
-	
+	sem_close (semPtEntree_GB);
+	sem_close (semPtEntree_BP_A);
+	sem_close (semPtEntree_BP_P);
+	sem_close (semPtShmCompteur);
+	sem_close (semPtShmParking);
+	sem_close (semPtShmRequete);
+
 	exit (EXIT_CODE);
 }
 
@@ -83,18 +79,16 @@ void affichageSortie (unsigned int place){
 
 	noAff = SortirVoiture (place);
 #ifdef MAP
-f << "lancement d'un sortir voiture avec le pid : " << noAff<< endl;
+	f << "lancement d'un sortir voiture avec le pid : " << noAff << endl;
 #endif
 
 	int st = -1;
-	do {
+	do{
 		waitpid (noAff, &st, 0);
-	#ifdef MAP
-f << "waitpid(" << noAff << ") status récupéré : " << st << endl;
-#endif
-	
-		
-	} while (st < 0);
+#ifdef MAP
+		f << "waitpid(" << noAff << ") status récupéré : " << st << endl;
+#endif		
+	}while(st < 0);
 
 #ifdef MAP
 	f << "Demande de lock sur le semaphore ShmCompteur" << std::endl;
@@ -122,11 +116,11 @@ f << "waitpid(" << noAff << ") status récupéré : " << st << endl;
 #ifdef MAP
 	f << "Affichage de la sortie effectuée :" << std::endl;
 #endif
-	sem_wait(semPtShmParking);
-	AfficherSortie (shmPtParking[place].type, shmPtParking[place].plaque, shmPtParking[place].arrivee, time(NULL));// @TODO : Implement that !
-	sem_post(semPtShmParking);
-	if(isFull) {
-		
+	sem_wait (semPtShmParking);
+	AfficherSortie (shmPtParking[place].type, shmPtParking[place].plaque, shmPtParking[place].arrivee, time (NULL));
+	sem_post (semPtShmParking);
+	if(isFull){
+
 #ifdef MAP
 		f << "SORTIE : Parking was full just before this car exit, so let's check if they are requests to be satisfied." << std::endl;
 #endif
@@ -142,7 +136,7 @@ f << "waitpid(" << noAff << ") status récupéré : " << st << endl;
 			}
 			else //*... Mais s'il y a un prof a l'entree de tous, le premier arrive doit rentrer
 			{
-				if (shmPtRequetes[ENTREE_P].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si le prof a l'entree Prof est arrive avant l'autre, il rentre
+				if(shmPtRequetes[ENTREE_P].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si le prof a l'entree Prof est arrive avant l'autre, il rentre
 				{
 					semPtToUnlock = semPtEntree_BP_P;
 					AfficherRequete (PROF_BLAISE_PASCAL, AUCUN, 0);
@@ -154,18 +148,18 @@ f << "waitpid(" << noAff << ") status récupéré : " << st << endl;
 				}
 			}
 		}
-		else  //*...Sinon s'il n'y a pas de prof à l'entree prof ...
+		else //*...Sinon s'il n'y a pas de prof à l'entree prof ...
 		{
-			if (shmPtRequetes[ENTREE_GB].type == PROF) //*... Si il y a un prof a l'entree de tous, il rentre
+			if(shmPtRequetes[ENTREE_GB].type == PROF) //*... Si il y a un prof a l'entree de tous, il rentre
 			{
 				semPtToUnlock = semPtEntree_GB;
 				AfficherRequete (ENTREE_GASTON_BERGER, AUCUN, 0);
 			}
-			else if (shmPtRequetes[ENTREE_GB].type == AUTRE)//* Si il y a un autre a l'entree de tous ...
+			else if(shmPtRequetes[ENTREE_GB].type == AUTRE)//* Si il y a un autre a l'entree de tous ...
 			{
-				if (shmPtRequetes[ENTREE_A].type != AUCUN) //*... Si il y a un autre a l'entree des autres , le premier arrive doit rentrer
+				if(shmPtRequetes[ENTREE_A].type != AUCUN) //*... Si il y a un autre a l'entree des autres , le premier arrive doit rentrer
 				{
-					if (shmPtRequetes[ENTREE_A].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si l'autre a l'entree autre est arrivee avant l'autre a l'entree de tous, il rentre
+					if(shmPtRequetes[ENTREE_A].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si l'autre a l'entree autre est arrivee avant l'autre a l'entree de tous, il rentre
 					{
 						semPtToUnlock = semPtEntree_BP_A;
 						AfficherRequete (AUTRE_BLAISE_PASCAL, AUCUN, 0);
