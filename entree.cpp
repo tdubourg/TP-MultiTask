@@ -4,6 +4,7 @@ static pidvect tachesFilles;
 static pid_t pidAttenteFinGarage;
 static int PorteNum = -1;
 static int canalDesc = -1;
+static unsigned short int NextVoitureId = 1;
 
 static void FinProgramme(int signum) {
 #ifdef MAP
@@ -50,7 +51,7 @@ static void FinAttenteFinGarage(int signum) {
 	exit(EXIT_CODE);
 }
 
-void entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
+unsigned char entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
 #ifdef MAP
 	std::ofstream f("entree_entreeAttenteFinGarage.log", ios_base::app);
 #endif
@@ -59,7 +60,7 @@ void entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arr
 #ifdef MAP
 		f << "Erreur, GarerVoiture() a renvoyé '-1' en tant que PID pour la tâche fille." << std::endl;
 #endif
-		return;
+		return 0;
 	}
 #ifdef MAP
 	f << "entreeAttenteFinGarage: Début d'une entreeAttenteFinGarage sur le pid " << pidGarage << std::endl;
@@ -94,6 +95,8 @@ void entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arr
 #ifdef MAP
 	f.close();
 #endif
+	
+	return place;
 }
 
 void entree(int porte_num) {
@@ -120,8 +123,9 @@ void entree(int porte_num) {
 	requete *shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
 	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (int), 0666 | 0);
 	int * shmPtCompteur = (int *) shmat(shmIdCompteur, NULL, 0);
-	sem_t* semPtShmCompteur;
-	sem_t* semPtEntree;
+	int shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666 | 0);
+	requete* shmPtParking = (requete*) shmat(shmIdParking, NULL, 0);
+	
 #ifdef MAP
 	f << "FIN récupération des mémoires partagées" << std::endl;
 #endif
@@ -131,9 +135,19 @@ void entree(int porte_num) {
 #ifdef MAP
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
+	sem_t* semPtShmCompteur;
 	while ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
 #ifdef MAP
 	f << "FIN récupération du séma pour Compteur" << std::endl;
+#endif
+	
+#ifdef MAP
+	f << "DEBUT récupération du séma pour Parking" << std::endl;
+#endif
+	sem_t* semPtShmParking;
+	while((semPtShmParking = sem_open(SEM_SHM_PARKING, O_CREAT, 0666, 1)) == SEM_FAILED); //* bloc vide
+#ifdef MAP
+	f << "FIN récupération du séma pour Parking" << std::endl;
 #endif
 	const char *cname;
 	TypeBarriere barriere;
@@ -158,7 +172,7 @@ void entree(int porte_num) {
 #ifdef MAP
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
-	
+	sem_t* semPtEntree;
 	while ((semPtEntree = sem_open(sem_key, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
 	
 	
@@ -214,9 +228,10 @@ void entree(int porte_num) {
 			requete req;
 			req.arrivee = (int) time(NULL);
 			req.type = tuture.type;
+			req.plaque = NextVoitureId++;//* @warning : NextVoitureId is incremented here
 			shmPtRequetes[porte_num] = req;
 			//* On affiche cette requête :
-			AfficherRequete (barriere, tuture.type, time(NULL));
+			AfficherRequete (barriere, tuture.type, req.arrivee);
 			//* Puis on attends l'autorisation de faire entrer la voiture :
 #ifdef MAP
 		f << "Entrée=" << PorteNum << " : Mise en attente sur le sémaphore" << std::endl;
@@ -237,9 +252,12 @@ void entree(int porte_num) {
 			pid_t noFille;
 			if ((noFille = fork()) == 0) {
 				//* Code de la fille qui attend la fin de GarerVoiture
-				entreeAttenteFinGarage(barriere, tuture.type, time(NULL), 0); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
+				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
 				// @TODO : Gérer les temps d'arrivée correctement : keyboard doit les foutre en mémoire
 				// partagée afin qu'ils soient récupéré par l'entrée, la sortie, etc. ... 
+				sem_wait(semPtShmParking);
+				shmPtParking[place-1] = req;//* Note : "place" commence à 1 alors que le tableau à 0 !
+				sem_post(semPtShmParking);
 				exit(EXIT_CODE);
 			}
 			tachesFilles.push_back(noFille);

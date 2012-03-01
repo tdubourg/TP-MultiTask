@@ -45,6 +45,7 @@ typedef struct r
 {
     TypeUsager type;
     int arrivee;
+    short int plaque;
 } requete ;
 
 

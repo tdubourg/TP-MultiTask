@@ -80,9 +80,9 @@ void affichageSortie(unsigned int place)
 #ifdef MAP
 	f << "Affichage de la sortie effectuée :" << std::endl;
 #endif
-	
-	AfficherSortie (PROF, 2, 2, 2);// @TODO : Implement that !
-	
+	sem_wait(semPtShmParking);
+	AfficherSortie (shmPtParking[place].type, shmPtParking[place].plaque, shmPtParking[place].arrivee, time(NULL));// @TODO : Implement that !
+	sem_post(semPtShmParking);
 	if(isFull) {
 		
 #ifdef MAP
