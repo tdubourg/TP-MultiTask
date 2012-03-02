@@ -170,28 +170,28 @@ int main ( int argc, char** argv ) {
 
     if ( !error && ( noKeyboard = fork ( ) ) == 0 ) {
         //*Code du fils Keyboard
-        keyboard ( );
+        Keyboard ( );
     }
     else if ( !error && noKeyboard == -1 ) {
         error = true;
     }
     else if ( !error && ( noEntreeGB = fork ( ) ) == 0 ) {
         //*Code du fils entree Gaston Berger
-        entree ( ENTREE_GB );
+        Entree ( ENTREE_GB );
     }
     else if ( !error && noEntreeGB == -1 ) {
         error = true;
     }
     else if ( !error && ( noEntreeBPP = fork ( ) ) == 0 ) {
         //*Code du fils entree Prof (Blaise Pascal)
-        entree ( ENTREE_P );
+        Entree ( ENTREE_P );
     }
     else if ( !error && noEntreeBPP == -1 ) {
         error = true;
     }
     else if ( !error && ( noEntreeBPA = fork ( ) ) == 0 ) {
         //*Code du fils entree Autres (Blaise Pascal)
-        entree ( ENTREE_A );
+        Entree ( ENTREE_A );
     }
     else if ( !error && noEntreeBPA == -1 ) {
         error = true;

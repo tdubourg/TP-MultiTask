@@ -6,8 +6,6 @@ static int descBPA;
 static int descS;
 static unsigned short int NextVoitureId = 1;
 
-using namespace std;
-
 static void FinProgramme(int signum) {
 	if(descGB != -1) {
 		close(descGB);
@@ -25,7 +23,7 @@ static void FinProgramme(int signum) {
 }
 
 
-void keyboard() {
+void Keyboard() {
 #ifdef MAP
 	std::ofstream f("keyboard.log", ios_base::app);
 	f << "Début de keyboard" << std::endl;
