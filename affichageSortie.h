@@ -6,6 +6,16 @@
     e-mail               : florent.devriese@insa-lyon.fr
 *************************************************************************/
 
+//---------- Interface de la tâche <affichageSortie> (fichier affichageSortie.h) -------------
+
+//------------------------------------------------------------------------
+// Rôle de la tâche <affichageSortie>
+//    Cette tâche est chargée d'afficher toutes les information liées à la sortie
+//    d 'un véhicule grace à des appels provenant de Outils.
+//    Elle se charge également de détruire toutes sa tache fille (envoi de SIGUSR2) 
+//    lors de la reception de la fin de programme. 
+//------------------------------------------------------------------------
+
 #ifndef AFFICHAGESORTIE_H
 #define	AFFICHAGESORTIE_H
 

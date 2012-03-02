@@ -48,8 +48,8 @@
 #include "Config.h"
 
 int main(int argc, char** argv);
-// Mode d'emploi : aucun
-// Contrat : aucun
+// Mode d'emploi : Retour -1 en cas de soucis, 0 en cas d'execution normale
+// Contrat : Les paramètres du main seront ignorés
 
 
 #endif	/* MAIN_H */

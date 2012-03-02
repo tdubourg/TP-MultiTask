@@ -63,10 +63,9 @@ int main ( int argc, char** argv ) {
     sigaction ( SIGQUIT, &action, NULL );
     sigaction ( SIGABRT, &action, NULL );
     sigaction ( SIGFPE, &action, NULL );
-    sigaction ( SIGKILL, &action, NULL );
     sigaction ( SIGPIPE, &action, NULL );
     sigaction ( SIGALRM, &action, NULL );
-    sigaction ( SIGTERM, &action, NULL );
+    sigaction ( SIGTERM, &action, NULL );       
 
     //*Activation de l'heure
     if ( ( noHeure = ActiverHeure ( ) ) == -1 ) {
