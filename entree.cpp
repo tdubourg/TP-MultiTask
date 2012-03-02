@@ -62,7 +62,7 @@ pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShm
 	pid_t noFille;
 	if ((noFille = fork()) == 0) {
 		//* Code de la fille qui attend la fin de GarerVoiture
-		unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
+		unsigned char place = EntreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
 		//* On enregistre la voiture dans le parking : 
 #ifdef MAP
 		f << "ENTREE=" << PorteNum << " Début d'attente sur le séma Parking" << std::endl;
@@ -86,7 +86,8 @@ pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShm
 	
 	return noFille;
 }
-unsigned char entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
+
+unsigned char EntreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
 #ifdef MAP
 	std::ofstream f("entree_entreeAttenteFinGarage.log", ios_base::app);
 #endif
@@ -117,7 +118,7 @@ unsigned char entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, t
 #endif
 	} while (st < 0);
 	//* Transforming status to the place number :
-	unsigned char place = (st& 0xFF00)>>8;
+	unsigned char place = (st & 0xFF00)>>8;//* Equivalent de WEXITSTATUS(st)
 	
 	
 #ifdef MAP
