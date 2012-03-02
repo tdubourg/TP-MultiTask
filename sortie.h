@@ -6,6 +6,17 @@
     e-mail               : florent.devriese@insa-lyon.fr
 *************************************************************************/
 
+//---------- Interface de la tâche <sortie> (fichier sortie.h) -------------
+
+//------------------------------------------------------------------------
+// Rôle de la tâche <sortie>
+//    Cette tâche est chargée de lire le canal la reliant à keyboard
+//    pour déclencher une tache fille affichageSortie lorsqu'elle
+//    reçoit une demande de sortie. 
+//    Elle se charge également de détruire toutes ses taches filles (envoi de SIGUSR2) 
+//    lors de la reception de la fin de programme. 
+//------------------------------------------------------------------------
+
 #ifndef SORTIE_H
 #define	SORTIE_H
 
