@@ -227,9 +227,14 @@ void entree(int porte_num) {
 			if ((noFille = fork()) == 0) {
 				//* Code de la fille qui attend la fin de GarerVoiture
 				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
+				//* On enregistre la voiture dans le parking : 
+				sem_wait(semPtShmParking);
+				shmPtParking[place-1] = req;//* Note : "place" commence à 1 alors que le tableau à 0 !
+				sem_post(semPtShmParking);
 				exit(EXIT_CODE);
 			}
 			tachesFilles.push_back(noFille);
+			sleep(1);
 
 		} else {//* Le parking est plein :
 			shmPtRequetes[porte_num] = req;
@@ -255,7 +260,7 @@ void entree(int porte_num) {
 			pid_t noFille;
 			if ((noFille = fork()) == 0) {
 				//* Code de la fille qui attend la fin de GarerVoiture
-				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque); // @TODO : Gérer le numéro de voiture (paramètre à 0 pr l'instant)
+				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
 				//* On enregistre la voiture dans le parking : 
 				sem_wait(semPtShmParking);
 				shmPtParking[place-1] = req;//* Note : "place" commence à 1 alors que le tableau à 0 !
@@ -263,6 +268,7 @@ void entree(int porte_num) {
 				exit(EXIT_CODE);
 			}
 			tachesFilles.push_back(noFille);
+			sleep(1);
 		}
 	}
 #ifdef MAP
