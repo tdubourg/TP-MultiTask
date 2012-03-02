@@ -20,9 +20,7 @@ static void FinProgramme (int signum){
 #endif
 		kill ((*it), SIGUSR2);
 		int st = -1;
-		do{
-			waitpid ((*it), &st, 0);
-		}while(st < 0);
+		waitpid ((*it), &st, 0);
 	}
 
 	if(canalKeySortie != -1){
@@ -52,6 +50,12 @@ void Sortie (){
 	unsigned int place;
 	int noAffSortie;
 
+	if (error)
+	{
+		Afficher(MESSAGE, "Erreur de création de tache, quittez le programme.");
+		exit (-1);
+	}
+	
 	for(;;){
 		for(; read (canalKeySortie, &place, sizeof(unsigned int)) <= 0;); //Bloc vide //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
 		if((noAffSortie = fork ()) == 0){

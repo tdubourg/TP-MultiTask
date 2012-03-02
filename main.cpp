@@ -44,11 +44,19 @@ int main(int argc, char** argv) {
 	//masquages des signaux
 	struct sigaction action;
 	action.sa_handler = SIG_IGN;
-	action.sa_flags = 0;
+	action.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &action, NULL);
 	sigaction(SIGUSR1, &action, NULL);
 	sigaction(SIGUSR2, &action, NULL);
-
+	sigaction(SIGHUP, &action, NULL);
+	sigaction(SIGQUIT, &action, NULL);
+	sigaction(SIGABRT, &action, NULL);
+	sigaction(SIGFPE, &action, NULL);
+	sigaction(SIGKILL, &action, NULL);
+	sigaction(SIGPIPE, &action, NULL);
+	sigaction(SIGALRM, &action, NULL);
+	sigaction(SIGTERM, &action, NULL);
+	
         //Activation de l'heure
         if ((noHeure = ActiverHeure()) == -1)
         {
@@ -149,30 +157,30 @@ int main(int argc, char** argv) {
 		error = true;
 	}
 
-	if ((noKeyboard = fork()) == 0) {
+	if (!error && (noKeyboard = fork()) == 0) {
 		//Code du fils Keyboard
 		keyboard();
-	} else if (noKeyboard == -1) {
+	} else if (!error && noKeyboard == -1) {
 		error = true;
-	} else if ((noEntreeGB = fork()) == 0) {
+	} else if (!error && (noEntreeGB = fork()) == 0) {
 		//Code du fils entree Gaston Berger
 		entree(ENTREE_GB);
-	} else if (noEntreeGB == -1) {
+	} else if (!error && noEntreeGB == -1) {
 		error = true;
-	} else if ((noEntreeBPP = fork()) == 0) {
+	} else if (!error && (noEntreeBPP = fork()) == 0) {
 		//Code du fils entree Prof (Blaise Pascal)
 		entree(ENTREE_P);
-	} else if (noEntreeBPP == -1) {
+	} else if (!error && noEntreeBPP == -1) {
 		error = true;
-	} else if ((noEntreeBPA = fork()) == 0) {
+	} else if (!error && (noEntreeBPA = fork()) == 0) {
 		//Code du fils entree Autres (Blaise Pascal)
 		entree(ENTREE_A);
-	} else if (noEntreeBPA == -1) {
+	} else if (!error && noEntreeBPA == -1) {
 		error = true;
-	} else if ((noSortie = fork()) == 0) {
+	} else if (!error && (noSortie = fork()) == 0) {
 		//Code du fils Sortie
 		Sortie();	
-	} else if (noSortie == -1) {
+	} else if (!error && noSortie == -1) {
 		error = true;
 	} else {
 #ifdef MAP
@@ -187,9 +195,7 @@ int main(int argc, char** argv) {
 
 		//---------------------------------------------Moteur-------------------------------------------
 		int st = -1;
-		do {
 			waitpid(noKeyboard, &st, 0); //Attend la fin de la tache fille Keyboard
-		} while (st < 0);
 #ifdef MAP
 		f << "Keyboard has exited" << endl;
 #endif
@@ -206,43 +212,28 @@ int main(int argc, char** argv) {
 		 * afin de détruire les canaux (car il faut qu'il n'y ait plus ni écrivains ni lecteurs du le canal
 		 * avant de le fermer
 		 */
-		st = -1;
 		kill(noEntreeBPA, SIGUSR2);
-		do {
-			waitpid(noEntreeBPA, &st, 0);
-		} while (st < 0);
+		waitpid(noEntreeBPA, &st, 0);
                 #ifdef MAP
 		f << "BPA has exited" << endl;
 #endif
-		st = -1;
 		kill(noEntreeBPP, SIGUSR2);
-		do {
-			waitpid(noEntreeBPP, &st, 0);
-		} while (st < 0);
-
-                
-		st = -1;
+		waitpid(noEntreeBPP, &st, 0);
+           
 		kill(noEntreeGB, SIGUSR2);
-		do {
-			waitpid(noEntreeGB, &st, 0);
-		} while (st < 0);
+		waitpid(noEntreeGB, &st, 0);
 #ifdef MAP
 		f << "GB has exited" << endl;
 #endif
-		st = -1;
+
 		kill(noHeure, SIGUSR2);
-		do {
-			waitpid(noHeure, &st, 0);
-		} while (st < 0);
+		waitpid(noHeure, &st, 0);
 
                 #ifdef MAP
 		f << "Heure has exited" << endl;
 #endif
-		st = -1;
 		kill(noSortie, SIGUSR2);
-		do {
-			waitpid(noSortie, &st, 0);
-		} while (st < 0);
+		waitpid(noSortie, &st, 0);
                 
                 #ifdef MAP
 		f << "Sortie has exited" << endl;
@@ -283,7 +274,7 @@ int main(int argc, char** argv) {
 	}
 
 	if (error) {
-		return 1;
+		return -1;
 	} else {
 		return 0;
 	}

@@ -52,6 +52,7 @@ void affichageSortie (unsigned int place){
 #endif
 	//--------------------------------Initialisation------------------------------------
 
+	bool error = false;
 
 	//Association du signal SIGUSR2 à  la fin du programme
 	struct sigaction action;
@@ -59,24 +60,78 @@ void affichageSortie (unsigned int place){
 	sigaction (SIGUSR2, &action, NULL);
 
 	//Ouverture des sémaphore de protection  
-	sem_t* semPtShmCompteur = sem_open (SEM_SHM_COMPTEUR, 0, 0666, 1);
-	sem_t* semPtShmRequete = sem_open (SEM_SHM_REQUETE, 0, 0666, 1);
-	sem_t* semPtShmParking = sem_open (SEM_SHM_PARKING, 0, 0666, 1);
-	sem_t* semPtEntree_GB = sem_open (SEM_ENTREE_GB, 0, 0666, 1);
-	sem_t* semPtEntree_BP_A = sem_open (SEM_ENTREE_BP_A, 0, 0666, 1);
-	sem_t* semPtEntree_BP_P = sem_open (SEM_ENTREE_BP_P, 0, 0666, 1);
+	semPtShmCompteur = sem_open (SEM_SHM_COMPTEUR, 0, 0666, 1);
+	if (semPtShmCompteur == SEM_FAILED)
+	{
+		error = true;
+	}
+	semPtShmRequete = sem_open (SEM_SHM_REQUETE, 0, 0666, 1);
+	if (semPtShmRequete == SEM_FAILED)
+	{
+		error = true;
+	}
+	semPtShmParking = sem_open (SEM_SHM_PARKING, 0, 0666, 1);
+	if (semPtShmParking == SEM_FAILED)
+	{
+		error = true;
+	}
+	semPtEntree_GB = sem_open (SEM_ENTREE_GB, 0, 0666, 1);
+	if (semPtEntree_GB == SEM_FAILED)
+	{
+		error = true;
+	}
+	semPtEntree_BP_A = sem_open (SEM_ENTREE_BP_A, 0, 0666, 1);
+	if (semPtEntree_BP_A == SEM_FAILED)
+	{
+		error = true;
+	}
+	semPtEntree_BP_P = sem_open (SEM_ENTREE_BP_P, 0, 0666, 1);
+	if (semPtEntree_BP_P == SEM_FAILED)
+	{
+		error = true;
+	}
 
 	//Ouverture des mémoires partagées 
 	int shmIdCompteur = shmget (CLEF_COMPTEUR, sizeof(int), 0666 | 0);
+	if (shmIdCompteur < 0)
+	{
+		error = true;
+	}
 	int shmIdRequetes = shmget (CLEF_REQUETES, sizeof(requete) * NB_PORTES, 0666 | 0);
+	if (shmIdRequetes < 0)
+	{
+		error = true;
+	}
 	int shmIdParking = shmget (CLEF_PARKING, sizeof(requete) * CAPACITE_PARKING, 0666);
+	if (shmIdParking < 0)
+	{
+		error = true;
+	}
 
 	shmPtCompteur = (int*) shmat (shmIdCompteur, NULL, 0);
+	if (shmPtCompteur == NULL)
+	{
+		error = true;
+	}
 	shmPtRequetes = (requete*) shmat (shmIdRequetes, NULL, 0);
+	if (shmPtRequetes == NULL)
+	{
+		error = true;
+	}
 	shmPtParking = (requete*) shmat (shmIdParking, NULL, 0);
+	if (shmPtParking == NULL)
+	{
+		error = true;
+	}
 
 	//------------------------------------Moteur--------------------------------------- 
 
+	if (error)
+	{
+		Afficher(MESSAGE, "Erreur de création de tache, quittez le programme.");
+		exit (-1);
+	}
+	
 	noAff = SortirVoiture (place);
 #ifdef MAP
 	f << "AFFICHAGESORTIE : lancement d'un sortir voiture avec le pid : " << noAff << endl;
@@ -117,7 +172,7 @@ void affichageSortie (unsigned int place){
 	f << "AFFICHAGESORTIE : Affichage de la sortie effectuée + Effacement des places de parking." << std::endl;
 #endif
 	
-	switch (place)//Effacement des places correspondante à la sortie
+	switch (place)//Effacement des places correspondantes à la sortie
 	{
 		case 1:
 			Effacer ( ETAT_P1 );
