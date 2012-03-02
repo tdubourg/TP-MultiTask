@@ -134,7 +134,7 @@ unsigned char entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, t
 	return place;
 }
 
-void entree(int porte_num) {
+void Entree(int porte_num) {
 #ifdef MAP
 	//cout << "Pouet";
 	std::stringstream fname_tmp;
