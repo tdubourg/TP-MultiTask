@@ -199,6 +199,11 @@ void affichageSortie (unsigned int place){
 						Effacer ( REQUETE_R3 );
 					}
 				}
+				else //*Sinon si il n'y a personne à l'entree des autres, l'autre a la rentree de tous rentre
+				{
+					semPtToUnlock = semPtEntree_GB;
+					Effacer ( REQUETE_R3 ); 
+				}
 			}
 			else //*Sinon, le dernier cas possible etant qu'il y ai seulement un autre a l'entree autre, on le fait rentrer
 			{
