@@ -172,7 +172,10 @@ void entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
 	sem_t* semPtShmCompteur;
-	while ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 1)) == SEM_FAILED); //* bloc vide
+	if((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 1)) == SEM_FAILED) {
+		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
+		FinProgramme(EXIT_CODE);
+	}
 #ifdef MAP
 	f << "FIN récupération du séma pour Compteur" << std::endl;
 #endif
@@ -181,7 +184,10 @@ void entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Parking" << std::endl;
 #endif
 	sem_t* semPtShmParking;
-	while((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 1)) == SEM_FAILED); //* bloc vide
+	if((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 1)) == SEM_FAILED) {
+		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
+		FinProgramme(EXIT_CODE);
+	}
 #ifdef MAP
 	f << "FIN récupération du séma pour Parking" << std::endl;
 #endif
@@ -209,7 +215,11 @@ void entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
 	sem_t* semPtEntree;
-	while ((semPtEntree = sem_open(sem_key, 0, 0666, 1)) == SEM_FAILED); //* bloc vide
+	if((semPtEntree = sem_open(sem_key, 0, 0666, 1)) == SEM_FAILED) {
+		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
+		FinProgramme(EXIT_CODE);
+	}
+	
 	
 	
 #ifdef MAP
@@ -234,7 +244,7 @@ void entree(int porte_num) {
 #endif
 	voiture tuture;
 	for(;;) {//* Phase moteur
-		while (read(canalDesc, &tuture, sizeof (voiture)) <= 0);//* bloc vide, while au cas où on est interrompu par un signal
+		read(canalDesc, &tuture, sizeof (voiture));
 		DessinerVoitureBarriere(barriere, tuture.type);
 #ifdef MAP
 		f << "Entrée=" << PorteNum << " : Valeur lue sur le canal : voiture id=" << tuture.id << std::endl;
