@@ -1,13 +1,29 @@
-/* 
- * File:   main.h
- * Author: fhyren
- *
- * Created on February 27, 2012, 11:06 PM
- */
+/*************************************************************************
+                           Main.h  -  description
+                             -------------------
+    début                : 27 février 2012
+    copyright            : (C) 2012 par Florent Devriese
+    e-mail               : florent.devriese@insa-lyon.fr
+*************************************************************************/
+
+//---------- Interface de la tâche <Main> (fichier Main.h) -------------
+//------------------------------Mere------------------------------------
+
+//------------------------------------------------------------------------
+// Rôle de la tâche <Main>
+//    Cette tâche est chargée de la création de toutes
+//    les ressources necessaires au bon fonctionnement
+//    du programme, ainsi que des taches filles chargées
+//    de les utiliser.
+//    Elle se charge également de détruire toutes les ressources
+//    et taches filles (envoi de SIGUSR2) lors de la reception
+//    de la fin de programme. 
+//------------------------------------------------------------------------
 
 #ifndef MAIN_H
 #define	MAIN_H
 
+//////////////////////////////////////////////INCLUDE
 /*-------------------------------------------- Includes systemes ----------------------------------------------- */
 
 #include <cstdlib>
@@ -21,9 +37,7 @@
 #include <semaphore.h>
 #include <fcntl.h>
 
-#include <errno.h>
-
-/*----------------------------------------- Includes non systemes ---------------------------------------------- */
+/*----------------------------------------- Includes personels ---------------------------------------------- */
 
 #include "Heure.h"
 #include "Menu.h"
@@ -34,6 +48,9 @@
 #include "Config.h"
 
 int main(int argc, char** argv);
+// Mode d'emploi : aucun
+// Contrat : aucun
+
 
 #endif	/* MAIN_H */
 
