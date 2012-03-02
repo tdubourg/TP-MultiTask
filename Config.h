@@ -1,9 +1,12 @@
-/* 
- * File:   Config.h
- * Author: fhyren
- *
- * Created on February 27, 2012, 10:50 PM
- */
+/*************************************************************************
+                           Config.h  -  description
+                             -------------------
+    début                : 27 février 2012
+    copyright            : (C) 2012 par Florent Devriese & Théo Dubourg
+    e-mail               : florent.devriese@insa-lyon.fr & theo.dubourg@insa-lyon.fr
+ *************************************************************************/
+
+//---------- Interface du fichier de configuration Config.h -----------
 
 #ifndef CONFIG_H
 #define	CONFIG_H
