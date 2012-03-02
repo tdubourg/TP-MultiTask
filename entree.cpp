@@ -54,6 +54,38 @@ static void FinAttenteFinGarage(int signum) {
 	exit(EXIT_CODE);
 }
 
+pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShmParking, requete* shmPtParking) {
+#ifdef MAP
+	std::ofstream f("entree_entreeAttenteFinGarage.log", ios_base::app);
+#endif
+	//* Lancement d'une tâche fille d'attente de la fin du garage pour affichage
+	pid_t noFille;
+	if ((noFille = fork()) == 0) {
+		//* Code de la fille qui attend la fin de GarerVoiture
+		unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
+		//* On enregistre la voiture dans le parking : 
+#ifdef MAP
+		f << "ENTREE=" << PorteNum << " Début d'attente sur le séma Parking" << std::endl;
+#endif
+		sem_wait(semPtShmParking);
+#ifdef MAP
+		f << "ENTREE=" << PorteNum << " Fin d'attente sur le séma Parking" << std::endl;
+#endif
+		shmPtParking[place - 1] = req; //* Note : "place" commence à 1 alors que le tableau à 0 !
+#ifdef MAP
+		f << "ENTREE=" << PorteNum << " Début de débloquage du sémaphore sur le séma Parking" << std::endl;
+#endif
+		sem_post(semPtShmParking);
+#ifdef MAP
+		f << "ENTREE=" << PorteNum << " Fin du débloquage sur le séma Parking" << std::endl;
+#endif
+		exit(EXIT_CODE);
+	}
+	tachesFilles.push_back(noFille);
+	sleep(1);
+	
+	return noFille;
+}
 unsigned char entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture) {
 #ifdef MAP
 	std::ofstream f("entree_entreeAttenteFinGarage.log", ios_base::app);
@@ -222,33 +254,7 @@ void entree(int porte_num) {
 			*shmPtCompteur -= 1; //* On décrémente le nb de places dispo !
 			sem_post(semPtShmCompteur);
 
-			//* Lancement d'une tâche fille d'attente de la fin du garage pour affichage
-			pid_t noFille;
-			if ((noFille = fork()) == 0) {
-				//* Code de la fille qui attend la fin de GarerVoiture
-				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
-				//* On enregistre la voiture dans le parking : 
-#ifdef MAP
-				f << "ENTREE=" << PorteNum << " Début d'attente sur le séma Parking" << std::endl;
-#endif
-				while((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
-				sem_wait(semPtShmParking);
-#ifdef MAP
-				f << "ENTREE=" << PorteNum << " Fin d'attente sur le séma Parking" << std::endl;
-#endif
-				shmPtParking[place-1] = req;//* Note : "place" commence à 1 alors que le tableau à 0 !
-#ifdef MAP
-				f << "ENTREE=" << PorteNum << " Début de débloquage du sémaphore sur le séma Parking" << std::endl;
-#endif
-				sem_post(semPtShmParking);
-#ifdef MAP
-				f << "ENTREE=" << PorteNum << " Fin du débloquage sur le séma Parking" << std::endl;
-#endif
-				exit(EXIT_CODE);
-			}
-			tachesFilles.push_back(noFille);
-			sleep(1);
-
+			Garage(req, barriere, tuture, semPtShmParking, shmPtParking);
 		} else {//* Le parking est plein :
 			shmPtRequetes[porte_num] = req;
 			//* On affiche cette requête :
@@ -269,19 +275,7 @@ void entree(int porte_num) {
 			*shmPtCompteur -= 1; //* On décrémente le nb de places dispo !
 			sem_post(semPtShmCompteur);
 
-			//* Lancement d'une tâche fille d'attente de la fin du garage pour affichage
-			pid_t noFille;
-			if ((noFille = fork()) == 0) {
-				//* Code de la fille qui attend la fin de GarerVoiture
-				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
-				//* On enregistre la voiture dans le parking : 
-				sem_wait(semPtShmParking);
-				shmPtParking[place-1] = req;//* Note : "place" commence à 1 alors que le tableau à 0 !
-				sem_post(semPtShmParking);
-				exit(EXIT_CODE);
-			}
-			tachesFilles.push_back(noFille);
-			sleep(1);
+			Garage(req, barriere, tuture, semPtShmParking, shmPtParking);
 		}
 	}
 #ifdef MAP

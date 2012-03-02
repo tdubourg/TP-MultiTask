@@ -31,7 +31,8 @@ typedef std::vector<pid_t> pidvect;
 
 
 void entree(int porte_num);
-
+pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShmParking, requete* shmPtParking);
+unsigned char entreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture);
 
 #endif	/* ENTREE_H */
 
