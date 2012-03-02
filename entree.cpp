@@ -244,8 +244,10 @@ void Entree(int porte_num) {
 	f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
 	voiture tuture;
-	for(;;) {//* Phase moteur
-		read(canalDesc, &tuture, sizeof (voiture));
+	for(;read(canalDesc, &tuture, sizeof (voiture)) > 0;) {//* Phase moteur
+		//* Note importante : 
+		//* si read() renvoit 0 => EOF() => plus d'écrivains => on arrête d'essayer de lire, fin de phase moteur
+		//* si read() renvoit -1 => appel système en échec => cas non géré spécifiquement (cf. sujet !), ici on finit la phase moteur également
 		DessinerVoitureBarriere(barriere, tuture.type);
 #ifdef MAP
 		f << "Entrée=" << PorteNum << " : Valeur lue sur le canal : voiture id=" << tuture.id << std::endl;
@@ -278,7 +280,6 @@ void Entree(int porte_num) {
 #ifdef MAP
 		f << "Entrée=" << PorteNum << " : Semaphore débloqué !" << std::endl;
 #endif
-			//* Et hop, jolie répétition de code ! @TODO
 			//* Y'a de la place, on se gare :
 			//* On décrémente le compteur avant :
 			//* Avec gestion du sémaphore
