@@ -162,6 +162,8 @@ void affichageSortie (unsigned int place){
 			{
 				semPtToUnlock = semPtEntree_BP_P;
 				Effacer ( REQUETE_R1 );
+				shmPtRequetes[ENTREE_P].type = AUCUN;
+				shmPtRequetes[ENTREE_P].arrivee = -1;
 			}
 			else //*... Mais s'il y a un prof a l'entree de tous, le premier arrive doit rentrer
 			{
@@ -169,11 +171,15 @@ void affichageSortie (unsigned int place){
 				{
 					semPtToUnlock = semPtEntree_BP_P;
 					Effacer ( REQUETE_R1 );
+					shmPtRequetes[ENTREE_P].type = AUCUN;
+					shmPtRequetes[ENTREE_P].arrivee = -1;
 				}
 				else //*Sinon, l'autre prof rentre
 				{
 					semPtToUnlock = semPtEntree_GB;
 					Effacer ( REQUETE_R3 );
+					shmPtRequetes[ENTREE_GB].type = AUCUN;
+					shmPtRequetes[ENTREE_GB].arrivee = -1;
 				}
 			}
 		}
@@ -183,6 +189,8 @@ void affichageSortie (unsigned int place){
 			{
 				semPtToUnlock = semPtEntree_GB;
 				Effacer ( REQUETE_R3 );
+				shmPtRequetes[ENTREE_GB].type = AUCUN;
+				shmPtRequetes[ENTREE_GB].arrivee = -1;
 			}
 			else if(shmPtRequetes[ENTREE_GB].type == AUTRE)//* Si il y a un autre a l'entree de tous ...
 			{
@@ -192,23 +200,31 @@ void affichageSortie (unsigned int place){
 					{
 						semPtToUnlock = semPtEntree_BP_A;
 						Effacer ( REQUETE_R2 );
+						shmPtRequetes[ENTREE_A].type = AUCUN;
+						shmPtRequetes[ENTREE_A].arrivee = -1;
 					}
 					else //*Sinon, c'est l'autre de l'entree de tous qui rentre
 					{
 						semPtToUnlock = semPtEntree_GB;
 						Effacer ( REQUETE_R3 );
+						shmPtRequetes[ENTREE_GB].type = AUCUN;
+						shmPtRequetes[ENTREE_GB].arrivee = -1;
 					}
 				}
 				else //*Sinon si il n'y a personne à l'entree des autres, l'autre a la rentree de tous rentre
 				{
 					semPtToUnlock = semPtEntree_GB;
 					Effacer ( REQUETE_R3 ); 
+					shmPtRequetes[ENTREE_GB].type = AUCUN;
+					shmPtRequetes[ENTREE_GB].arrivee = -1;
 				}
 			}
 			else //*Sinon, le dernier cas possible etant qu'il y ai seulement un autre a l'entree autre, on le fait rentrer
 			{
 				semPtToUnlock = semPtEntree_BP_A;
 				Effacer ( REQUETE_R2 );
+				shmPtRequetes[ENTREE_A].type = AUCUN;
+				shmPtRequetes[ENTREE_A].arrivee = -1;
 			}
 		}
 
