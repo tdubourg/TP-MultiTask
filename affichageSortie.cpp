@@ -74,6 +74,7 @@ void affichageSortie ( unsigned int place ) {
     //*Association du signal SIGUSR2 à  la fin du programme
     struct sigaction action;
     action.sa_handler = FinProgramme;
+    action.sa_flags = 0;
     sigaction ( SIGUSR2, &action, NULL );
 
     //*Ouverture des sémaphore de protection  
@@ -142,12 +143,10 @@ void affichageSortie ( unsigned int place ) {
 #endif
 
     int st = -1;
-    do {
         waitpid ( noAff, &st, 0 );
 #ifdef MAP
         f << "waitpid(" << noAff << ") status récupéré : " << st << endl;
-#endif		
-    } while ( st < 0 );
+#endif
 
 #ifdef MAP
     f << "AFFICHAGESORTIE : Demande de lock sur le semaphore ShmCompteur" << std::endl;
@@ -334,6 +333,6 @@ void affichageSortie ( unsigned int place ) {
 #ifdef MAP
     f.close ( );
 #endif
-    //Si, pour une raison quelconque on arrive ici, on arrete proprement
+    //Si on arrive ici, on arrete proprement
     FinProgramme ( 0 );
 }//-----------Fin de affichageSortie

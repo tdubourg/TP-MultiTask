@@ -58,6 +58,7 @@ void Sortie ( ) {
     //*Association du signal SIGUSR2 à  la fin du programme
     struct sigaction action;
     action.sa_handler = FinProgramme;
+    action.sa_flags = 0;
     sigaction ( SIGUSR2, &action, NULL );
 
     //*Ouverture du canal de communication en lecture
@@ -93,4 +94,6 @@ void Sortie ( ) {
             noSorties.push_back ( noAffSortie );
         }
     }
+    
+    FinProgramme(-1);
 }//-----------Fin de Sortie
