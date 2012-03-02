@@ -9,7 +9,7 @@ std::ofstream f ("debug_sortie.log", ios_base::app);
 static int canalKeySortie = -1;
 static vector<int> noSorties;
 
-static void FinProgramme (int signum){
+static void FinProgramme (int num){
 #ifdef MAP
 	f << "fin programme" << endl;
 #endif
@@ -26,7 +26,13 @@ static void FinProgramme (int signum){
 	if(canalKeySortie != -1){
 		close (canalKeySortie);
 	}
-	exit (EXIT_CODE);
+	
+	if (num != -1)
+	{
+		num = 0;
+	}
+	
+	exit (num); 
 }
 
 void Sortie (){
@@ -53,15 +59,19 @@ void Sortie (){
 	if (error)
 	{
 		Afficher(MESSAGE, "Erreur de création de tache, quittez le programme.");
-		exit (-1);
+		FinProgramme (-1);
 	}
 	
-	for(;;){
-		for(; read (canalKeySortie, &place, sizeof(unsigned int)) <= 0;); //Bloc vide //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
-		if((noAffSortie = fork ()) == 0){
-			//Code du fils affichageSortie
+	int stCanal = -1;
+	for(;stCanal != 0;){ //Tant qu'il y a un écrivain au bout du canal ...
+		stCanal = read (canalKeySortie, &place, sizeof(unsigned int));//On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
+		if(stCanal != 0 && (noAffSortie = fork ()) == 0){
+			//Code du fils affichageSortie	
+#ifdef MAP
+f << "Creation d'une tache affichage sortie" << endl;
+#endif
+		
 			affichageSortie (place);
-			exit (0);
 		}
 #ifdef MAP
 		f << "filles de sortie :(affichage sortie) :" << noAffSortie << endl;

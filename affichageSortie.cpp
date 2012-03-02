@@ -15,7 +15,7 @@ static sem_t* semPtEntree_GB;
 static sem_t* semPtEntree_BP_A;
 static sem_t* semPtEntree_BP_P;
 
-static void FinProgramme (int signum){
+static void FinProgramme (int num){
 #ifdef MAP
 	std::ofstream f ("affichageSortie.log", ios_base::app);
 	f << "AFFICHAGESORTIE : on recoie le signal ..." << std::endl;
@@ -41,8 +41,13 @@ static void FinProgramme (int signum){
 	sem_close (semPtShmCompteur);
 	sem_close (semPtShmParking);
 	sem_close (semPtShmRequete);
+	
+	if (num != -1)
+	{
+		num = 0;
+	}
 
-	exit (EXIT_CODE);
+	exit (num);
 }
 
 void affichageSortie (unsigned int place){
@@ -129,7 +134,7 @@ void affichageSortie (unsigned int place){
 	if (error)
 	{
 		Afficher(MESSAGE, "Erreur de création de tache, quittez le programme.");
-		exit (-1);
+		FinProgramme (-1);
 	}
 	
 	noAff = SortirVoiture (place);
