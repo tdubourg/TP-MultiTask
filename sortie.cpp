@@ -77,9 +77,9 @@ void Sortie ( ) {
     }
 
     int stCanal = -1;
-    for ( ;stCanal > 0; ) { 
+    for ( ;stCanal != 0; ) { 
         stCanal = read ( canalKeySortie, &place, sizeof (unsigned int ) ); //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
-        if ( stCanal > 0 && ( noAffSortie = fork ( ) ) == 0 ) {
+        if ( stCanal != 0 && ( noAffSortie = fork ( ) ) == 0 ) {
             //Code du fils affichageSortie	
 #ifdef MAP
             f << "Creation d'une tache affichage sortie" << endl;
