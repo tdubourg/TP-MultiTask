@@ -77,7 +77,7 @@ void Sortie ( ) {
     }
 
     int stCanal = -1;
-    for ( ; stCanal != 0; ) { //*Tant qu'il y a un écrivain au bout du canal ...
+    for ( ;; ) { 
         stCanal = read ( canalKeySortie, &place, sizeof (unsigned int ) ); //On lis dans le canal tant qu'il y a des éléments à lire, sinon, on attend qu'il y en ai de nouveau	
         if ( stCanal != 0 && ( noAffSortie = fork ( ) ) == 0 ) {
             //Code du fils affichageSortie	
