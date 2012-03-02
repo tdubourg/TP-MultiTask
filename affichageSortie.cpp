@@ -18,11 +18,11 @@ static sem_t* semPtEntree_BP_P;
 static void FinProgramme (int signum){
 #ifdef MAP
 	std::ofstream f ("affichageSortie.log", ios_base::app);
-	f << "on recoie le signal ..." << std::endl;
+	f << "AFFICHAGESORTIE : on recoie le signal ..." << std::endl;
 #endif
 	if(noAff != -1){
 #ifdef MAP
-		f << "on envoie le signal a la fifille" << std::endl;
+		f << "AFFICHAGESORTIE : on envoie le signal a la fifille" << std::endl;
 #endif
 		kill (noAff, SIGUSR2);
 		int st = -1;
@@ -48,7 +48,7 @@ static void FinProgramme (int signum){
 void affichageSortie (unsigned int place){
 #ifdef MAP
 	std::ofstream f ("affichageSortie.log", ios_base::app);
-	f << "Début de affichageSortie(" << place << ")" << std::endl;
+	f << "AFFICHAGESORTIE : Début de affichageSortie(" << place << ")" << std::endl;
 #endif
 	//--------------------------------Initialisation------------------------------------
 
@@ -59,12 +59,12 @@ void affichageSortie (unsigned int place){
 	sigaction (SIGUSR2, &action, NULL);
 
 	//Ouverture des sémaphore de protection  
-	sem_t* semPtShmCompteur = sem_open (SEM_SHM_COMPTEUR, 0, 0666, 0);
-	sem_t* semPtShmRequete = sem_open (SEM_SHM_REQUETE, 0, 0666, 0);
-	sem_t* semPtShmParking = sem_open (SEM_SHM_PARKING, 0, 0666, 0);
-	sem_t* semPtEntree_GB = sem_open (SEM_ENTREE_GB, 0, 0666, 0);
-	sem_t* semPtEntree_BP_A = sem_open (SEM_ENTREE_BP_A, 0, 0666, 0);
-	sem_t* semPtEntree_BP_P = sem_open (SEM_ENTREE_BP_P, 0, 0666, 0);
+	sem_t* semPtShmCompteur = sem_open (SEM_SHM_COMPTEUR, 0, 0666, 1);
+	sem_t* semPtShmRequete = sem_open (SEM_SHM_REQUETE, 0, 0666, 1);
+	sem_t* semPtShmParking = sem_open (SEM_SHM_PARKING, 0, 0666, 1);
+	sem_t* semPtEntree_GB = sem_open (SEM_ENTREE_GB, 0, 0666, 1);
+	sem_t* semPtEntree_BP_A = sem_open (SEM_ENTREE_BP_A, 0, 0666, 1);
+	sem_t* semPtEntree_BP_P = sem_open (SEM_ENTREE_BP_P, 0, 0666, 1);
 
 	//Ouverture des mémoires partagées 
 	int shmIdCompteur = shmget (CLEF_COMPTEUR, sizeof(int), 0666 | 0);
@@ -79,7 +79,7 @@ void affichageSortie (unsigned int place){
 
 	noAff = SortirVoiture (place);
 #ifdef MAP
-	f << "lancement d'un sortir voiture avec le pid : " << noAff << endl;
+	f << "AFFICHAGESORTIE : lancement d'un sortir voiture avec le pid : " << noAff << endl;
 #endif
 
 	int st = -1;
@@ -91,30 +91,30 @@ void affichageSortie (unsigned int place){
 	}while(st < 0);
 
 #ifdef MAP
-	f << "Demande de lock sur le semaphore ShmCompteur" << std::endl;
+	f << "AFFICHAGESORTIE : Demande de lock sur le semaphore ShmCompteur" << std::endl;
 #endif
 
 	sem_wait (semPtShmCompteur); //On prend possession de la mémoire partagée servant à compter le nombre de place dans le parking, sinon, on attend qu'elle soit disponible
 
 #ifdef MAP
-	f << "Demande de lock sur le semaphore ShmCompteur RÉUSSIE" << std::endl;
+	f << "AFFICHAGESORTI : Demande de lock sur le semaphore ShmCompteur RÉUSSIE" << std::endl;
 #endif
 
 	bool isFull = !(*shmPtCompteur); //* /!\ On le fait avant de libérer de la place /!\ 
 
 #ifdef MAP
-	f << "Valeur compteur avant incrément : " << *shmPtCompteur << std::endl;
+	f << "AFFICHAGESORTIE : Valeur compteur avant incrément : " << *shmPtCompteur << std::endl;
 #endif
 
 	*shmPtCompteur = (*shmPtCompteur) + 1;
 
 #ifdef MAP
-	f << "Relâchement du lock sur le semaphore ShmCompteur après incrément. Valeur actuelle :" << *shmPtCompteur << std::endl;
+	f << "AFFICHAGESORTIE : Relâchement du lock sur le semaphore ShmCompteur après incrément. Valeur actuelle :" << *shmPtCompteur << std::endl;
 #endif
 	sem_post (semPtShmCompteur); //On restitue l'accès à la mémoire partagée
 
 #ifdef MAP
-	f << "Affichage de la sortie effectuée :" << std::endl;
+	f << "AFFICHAGESORTIE : Affichage de la sortie effectuée + Effacement des places de parking." << std::endl;
 #endif
 	
 	switch (place)//Effacement des places correspondante à la sortie
@@ -145,13 +145,28 @@ void affichageSortie (unsigned int place){
 			break;
 	}
 	
+#ifdef MAP
+	f << "AFFICHAGESORTIE : Effacement effectué." << std::endl;
+#endif
+	
 	sem_wait (semPtShmParking);
-	AfficherSortie (shmPtParking[place].type, shmPtParking[place].plaque, shmPtParking[place].arrivee, time (NULL));
-	sem_post (semPtShmParking);
-	if(isFull){
 
 #ifdef MAP
-		f << "SORTIE : Parking was full just before this car exit, so let's check if they are requests to be satisfied." << std::endl;
+	f << "AFFICHAGESORTIE : Lancement de l'affichage des infos relatives à la sortie toute récente de tuture." << std::endl;
+#endif
+	
+	AfficherSortie (shmPtParking[place].type, shmPtParking[place].plaque, shmPtParking[place].arrivee, time (NULL));
+
+#ifdef MAP
+	f << "AFFICHAGESORTIE : Affichage effectué/" << std::endl;
+#endif
+	
+	sem_post (semPtShmParking);
+	
+	if(isFull) {
+
+#ifdef MAP
+		f << "AFFICHAGESORTIE : Parking was full just before this car exit, so let's check if they are requests to be satisfied." << std::endl;
 #endif
 		sem_t* semPtToUnlock;
 		//* Parcours du tableau des requêtes :
@@ -160,6 +175,9 @@ void affichageSortie (unsigned int place){
 		{
 			if(shmPtRequetes[ENTREE_GB].type != PROF) //*... Et s'il n'y a pas d'autre prof a l'entree de tous, le prof rentre
 			{
+#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree PROF" << std::endl;
+#endif
 				semPtToUnlock = semPtEntree_BP_P;
 				Effacer ( REQUETE_R1 );
 				shmPtRequetes[ENTREE_P].type = AUCUN;
@@ -169,6 +187,9 @@ void affichageSortie (unsigned int place){
 			{
 				if(shmPtRequetes[ENTREE_P].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si le prof a l'entree Prof est arrive avant l'autre, il rentre
 				{
+					#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree PROF" << std::endl;
+#endif
 					semPtToUnlock = semPtEntree_BP_P;
 					Effacer ( REQUETE_R1 );
 					shmPtRequetes[ENTREE_P].type = AUCUN;
@@ -176,6 +197,9 @@ void affichageSortie (unsigned int place){
 				}
 				else //*Sinon, l'autre prof rentre
 				{
+					#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree GB" << std::endl;
+#endif
 					semPtToUnlock = semPtEntree_GB;
 					Effacer ( REQUETE_R3 );
 					shmPtRequetes[ENTREE_GB].type = AUCUN;
@@ -187,6 +211,9 @@ void affichageSortie (unsigned int place){
 		{
 			if(shmPtRequetes[ENTREE_GB].type == PROF) //*... Si il y a un prof a l'entree de tous, il rentre
 			{
+				#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree GB" << std::endl;
+#endif
 				semPtToUnlock = semPtEntree_GB;
 				Effacer ( REQUETE_R3 );
 				shmPtRequetes[ENTREE_GB].type = AUCUN;
@@ -198,6 +225,9 @@ void affichageSortie (unsigned int place){
 				{
 					if(shmPtRequetes[ENTREE_A].arrivee < shmPtRequetes[ENTREE_GB].arrivee) //* si l'autre a l'entree autre est arrivee avant l'autre a l'entree de tous, il rentre
 					{
+						#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree AUTRE" << std::endl;
+#endif
 						semPtToUnlock = semPtEntree_BP_A;
 						Effacer ( REQUETE_R2 );
 						shmPtRequetes[ENTREE_A].type = AUCUN;
@@ -205,6 +235,9 @@ void affichageSortie (unsigned int place){
 					}
 					else //*Sinon, c'est l'autre de l'entree de tous qui rentre
 					{
+						#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree GB" << std::endl;
+#endif
 						semPtToUnlock = semPtEntree_GB;
 						Effacer ( REQUETE_R3 );
 						shmPtRequetes[ENTREE_GB].type = AUCUN;
@@ -213,6 +246,9 @@ void affichageSortie (unsigned int place){
 				}
 				else //*Sinon si il n'y a personne à l'entree des autres, l'autre a la rentree de tous rentre
 				{
+					#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree GB" << std::endl;
+#endif
 					semPtToUnlock = semPtEntree_GB;
 					Effacer ( REQUETE_R3 ); 
 					shmPtRequetes[ENTREE_GB].type = AUCUN;
@@ -221,6 +257,9 @@ void affichageSortie (unsigned int place){
 			}
 			else //*Sinon, le dernier cas possible etant qu'il y ai seulement un autre a l'entree autre, on le fait rentrer
 			{
+				#ifdef MAP
+	f << "AFFICHAGESORTIE : Nous allons debloquer l entree AUTRE" << std::endl;
+#endif
 				semPtToUnlock = semPtEntree_BP_A;
 				Effacer ( REQUETE_R2 );
 				shmPtRequetes[ENTREE_A].type = AUCUN;

@@ -261,6 +261,7 @@ int main(int argc, char** argv) {
 		shmdt(shmPtCompteur);
 		shmctl(shmIdCompteur, IPC_RMID, 0);
 		shmctl(shmIdRequetes, IPC_RMID, 0);
+		shmctl(shmIdParking, IPC_RMID, 0);
 
 		#ifdef MAP
 		f << "Memoire partagee detruites" << endl;
@@ -272,6 +273,7 @@ int main(int argc, char** argv) {
 		sem_unlink(SEM_ENTREE_GB);
 		sem_unlink(SEM_SHM_COMPTEUR);
 		sem_unlink(SEM_SHM_REQUETE);
+		sem_unlink(SEM_SHM_PARKING);
 
 		#ifdef MAP
 		f << "Semaphores détruits" << endl;

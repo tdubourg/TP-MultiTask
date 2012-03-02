@@ -228,9 +228,22 @@ void entree(int porte_num) {
 				//* Code de la fille qui attend la fin de GarerVoiture
 				unsigned char place = entreeAttenteFinGarage(barriere, tuture.type, req.arrivee, req.plaque);
 				//* On enregistre la voiture dans le parking : 
+#ifdef MAP
+				f << "ENTREE=" << PorteNum << " Début d'attente sur le séma Parking" << std::endl;
+#endif
+				while((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 0)) == SEM_FAILED); //* bloc vide
 				sem_wait(semPtShmParking);
+#ifdef MAP
+				f << "ENTREE=" << PorteNum << " Fin d'attente sur le séma Parking" << std::endl;
+#endif
 				shmPtParking[place-1] = req;//* Note : "place" commence à 1 alors que le tableau à 0 !
+#ifdef MAP
+				f << "ENTREE=" << PorteNum << " Début de débloquage du sémaphore sur le séma Parking" << std::endl;
+#endif
 				sem_post(semPtShmParking);
+#ifdef MAP
+				f << "ENTREE=" << PorteNum << " Fin du débloquage sur le séma Parking" << std::endl;
+#endif
 				exit(EXIT_CODE);
 			}
 			tachesFilles.push_back(noFille);
