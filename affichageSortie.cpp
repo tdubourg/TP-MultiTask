@@ -8,7 +8,7 @@ using namespace std;
 //////////////////////////////////////////////PRIVE
 /*----------------------------------------- Variables statiques ---------------------------------------------- */
 static int noAff = -1;
-static int* shmPtCompteur;
+static compteur_t* shmPtCompteur;
 static requete* shmPtRequetes;
 static requete * shmPtParking;
 static sem_t* semPtShmCompteur;
@@ -117,7 +117,7 @@ void affichageSortie ( unsigned int place ) {
         error = true;
     }
 
-    shmPtCompteur = ( int* ) shmat ( shmIdCompteur, NULL, 0 );
+    shmPtCompteur = ( compteur_t* ) shmat ( shmIdCompteur, NULL, 0 );
     if ( shmPtCompteur == NULL ) {
         error = true;
     }

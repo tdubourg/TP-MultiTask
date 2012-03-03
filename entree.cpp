@@ -1,10 +1,10 @@
 /*************************************************************************
-                           entree  -  description
-                             -------------------
+						   entree  -  description
+							 -------------------
 	début                : 16/02/2012
 	copyright            : (C) 2012-2042 par tdubourg
 	e-mail               : theo.dubourg@insa-lyon.fr
-*************************************************************************/
+ *************************************************************************/
 
 //---------- Réalisation de la tâche <Entree> (fichier entree.cpp) ---
 
@@ -73,10 +73,10 @@ static void FinProgramme(int signum) {
 	f << "FinProgramme (entrée=" << PorteNum << " début de fermeture des canaux" << std::endl;
 #endif
 	//* Si le canal a été ouvert correctement, on le ferme correctement aussi :
-	if(canalDesc != -1) {
+	if (canalDesc != -1) {
 		close(canalDesc);
 	}
-	
+
 #ifdef MAP
 	f << "FinProgramme (entrée=" << PorteNum << "Fin de fermeture des canaux" << std::endl;
 	f.close();
@@ -107,7 +107,7 @@ static void FinAttenteFinGarage(int signum) {
 #endif
 	//* Terminaison du voiturier pour cette sous-tâche donnée :
 	int ret = kill(pidAttenteFinGarage, SIGUSR2);
-	
+
 #ifdef MAP
 	f << "FinAttenteFinGarage: Envoi de SIGUSR2 à " << pidAttenteFinGarage << " effectué. Code retour = " << ret << ". Errno=" << errno << std::endl;
 	f.close();
@@ -152,7 +152,7 @@ pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShm
 		//* Terminaison de la TACHE FILLE
 		exit(EXIT_CODE);
 	} //* Fin if fork() / Fin CODE FILLE
-	
+
 	//* CODE TACHE COURANTE :
 	//* On enregistre le pid de la tâche fille qu'on vient de créer, pour pouvoir 
 	//* L'arrêter le cas échéant, et gérer les zombies
@@ -165,7 +165,7 @@ pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShm
 	 * Cette synchro sert donc à éviter les collisions
 	 */
 	sleep(1);
-	
+
 	return noFille;
 }
 
@@ -195,28 +195,28 @@ unsigned char EntreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, t
 	action.sa_handler = FinAttenteFinGarage;
 	action.sa_flags = SA_RESTART;
 	sigaction(SIGUSR2, &action, NULL);
-	
+
 #ifdef MAP
 	f << "EntreeAttenteFinGarage : Début d'attente de la fin de la tâche fille GarerVoiture() ayant le pid " << pidGarage << std::endl;
 #endif
-	
+
 	//* On attend la fin de la tâche fille GarerVoiture() :
 	int st = -1;
 	waitpid(pidGarage, &st, 0);
 #ifdef MAP
-		f << "EntreeAttenteFinGarage (pid=" << pidGarage << ") : Status reçu=" << st << std::endl;
+	f << "EntreeAttenteFinGarage (pid=" << pidGarage << ") : Status reçu=" << st << std::endl;
 #endif
 	//* Transforming status to the place number :
-	unsigned char place = (st & 0xFF00)>>8;//* Equivalent de WEXITSTATUS(st)
+	unsigned char place = (st & 0xFF00) >> 8; //* Equivalent de WEXITSTATUS(st)
 	//* Mais au moins ici on voit l'opération effectuée (mise à zéro du dernier octet + décalage vers la droite de 8 bits = récupération du premier octet)
-	
+
 #ifdef MAP
-	f << "EntreeAttenteFinGarage : fin de la tâche fille " << pidGarage << " avec le status " << st << "correspondant à la place " << (int)place <<", lancement de l'affichage" << std::endl;
+	f << "EntreeAttenteFinGarage : fin de la tâche fille " << pidGarage << " avec le status " << st << "correspondant à la place " << (int) place << ", lancement de l'affichage" << std::endl;
 #endif
-	
+
 	//* Une fois celle-ci terminée, on affiche la place où elle s'est garée :
 	AfficherPlace(place, usager, numVoiture, arrivee);
-	
+
 #ifdef MAP
 	f.close();
 #endif
@@ -237,6 +237,9 @@ void Entree(int porte_num) {
 	f << "Lancement de Entrée avec porte_num = ";
 	f << porte_num << std::endl;
 #endif
+	/*********************** INITIALISATION **************************/
+	
+	/**** INITIALISATION GÉNÉRALE *** */
 	//* Enregistrement du numéro de porte de manière à ce que tout le monde puisse y accéder (notamment les ss-fonctions)
 	PorteNum = porte_num;
 
@@ -250,43 +253,50 @@ void Entree(int porte_num) {
 #ifdef MAP
 	f << "DEBUT récupération des mémoires partagées" << std::endl;
 #endif
+	//* Récupération des mémoires partagées :
+	//* Requêtes :
 	int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | 0);
 	requete *shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
+	//* Compteur de places libres :
 	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (compteur_t), 0666 | 0);
-	unsigned int * shmPtCompteur = (unsigned int *) shmat(shmIdCompteur, NULL, 0);
+	compteur_t* shmPtCompteur = (compteur_t *) shmat(shmIdCompteur, NULL, 0);
+	//* Informations sur les voitures garées dans le parking :
 	int shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666 | 0);
 	requete* shmPtParking = (requete*) shmat(shmIdParking, NULL, 0);
-	
+
 #ifdef MAP
 	f << "FIN récupération des mémoires partagées" << std::endl;
 	f << "Actuellement, il y a " << *shmPtCompteur << " places libres ds le parking." << std::endl;
 #endif
 
-	//* On essaie d'ouvrir le sema, si ça marche pas, on réessaie ! Car de toutes façons, le programme ne peut pas fonctionner
-	//* Sans ce sémaphore, attendons donc que qq'un l'initialise !
 #ifdef MAP
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
+	//* Séma de synchro sur la mémoire partagée contenant le compteur de places libres ds le parking
 	sem_t* semPtShmCompteur;
-	if((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 1)) == SEM_FAILED) {
+	if ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 1)) == SEM_FAILED) {
 		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
 		FinProgramme(EXIT_CODE);
 	}
 #ifdef MAP
 	f << "FIN récupération du séma pour Compteur" << std::endl;
 #endif
-	
+
 #ifdef MAP
 	f << "DEBUT récupération du séma pour Parking" << std::endl;
 #endif
+	//* Séma de synchro sur la mémoire partagée cotenant les infos sur les voitures garées dans le parking
 	sem_t* semPtShmParking;
-	if((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 1)) == SEM_FAILED) {
+	if ((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 1)) == SEM_FAILED) {
 		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
 		FinProgramme(EXIT_CODE);
 	}
 #ifdef MAP
 	f << "FIN récupération du séma pour Parking" << std::endl;
 #endif
+	/*********** INITIALISATION CONDITIONNELLE / SPÉCIFIQUE ***********/
+	
+	//* Début de l' "initialisation conditionnelle" (en fctn de quelle entrée on est !)
 	const char *cname;
 	TypeBarriere barriere;
 	const char * sem_key;
@@ -307,39 +317,38 @@ void Entree(int porte_num) {
 			sem_key = SEM_ENTREE_GB;
 			break;
 	}
-#ifdef MAP
-	f << "DEBUT récupération du séma pour Compteur" << std::endl;
-#endif
-	sem_t* semPtEntree;
-	if((semPtEntree = sem_open(sem_key, 0, 0666, 1)) == SEM_FAILED) {
-		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
-		FinProgramme(EXIT_CODE);
-	}
-	
-	
-	
-#ifdef MAP
-	f << "FIN récupération du séma pour Compteur" << std::endl;
-#endif
-#ifdef MAP
+	#ifdef MAP
 	f << "Debut d'ouverture du canal " << cname << endl;
 #endif
-	
+	//* Ouverture du canal en lecture, file d'attente des voitures à l'entrée :
 	canalDesc = open(cname, O_RDONLY);
-	
 #ifdef MAP
 	f << "Fin d'ouverture du canal " << cname << endl;
 #endif
 	if (canalDesc == -1) {//* L'ouverture du canal a échoué, on laisse tomber
 		return;
 	}
+#ifdef MAP
+	f << "DEBUT récupération du séma pour Compteur" << std::endl;
+#endif
+	sem_t* semPtEntree;
+	if ((semPtEntree = sem_open(sem_key, 0, 0666, 1)) == SEM_FAILED) {
+		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
+		FinProgramme(EXIT_CODE);
+	}
 
+#ifdef MAP
+	f << "FIN récupération du séma pour Compteur" << std::endl;
+#endif
+	
+	/*********** FIN DE L'INITIALISATION ************/
 
+	/************ PHASE MOTEUR ***************/
 #ifdef MAP
 	f << "Entrée : Debut de lecture du canal" << std::endl;
 #endif
 	voiture tuture;
-	for(;read(canalDesc, &tuture, sizeof (voiture)) > 0;) {//* Phase moteur
+	for (; read(canalDesc, &tuture, sizeof (voiture)) > 0;) {//* Phase moteur
 		//* Note importante : 
 		//* si read() renvoit 0 => EOF() => plus d'écrivains => on arrête d'essayer de lire, fin de phase moteur
 		//* si read() renvoit -1 => appel système en échec => cas non géré spécifiquement (cf. sujet !), ici on finit la phase moteur également
@@ -348,7 +357,7 @@ void Entree(int porte_num) {
 		f << "Entrée=" << PorteNum << " : Valeur lue sur le canal : voiture id=" << tuture.plaque << std::endl;
 		f << "Entrée=" << PorteNum << " : Il y a actuellement " << (*shmPtCompteur) << "places libres dans le parking." << std::endl;
 #endif
-		
+
 		//* On formule une requête d'entrée :
 		requete req;
 		req.arrivee = (int) time(NULL);
@@ -366,16 +375,16 @@ void Entree(int porte_num) {
 		} else {//* Le parking est plein :
 			shmPtRequetes[porte_num] = req;
 			//* On affiche cette requête :
-			AfficherRequete (barriere, tuture.type, req.arrivee);
+			AfficherRequete(barriere, tuture.type, req.arrivee);
 			//* Puis on attends l'autorisation de faire entrer la voiture :
 #ifdef MAP
-		f << "Entrée=" << PorteNum << " : Mise en attente sur le sémaphore" << std::endl;
+			f << "Entrée=" << PorteNum << " : Mise en attente sur le sémaphore" << std::endl;
 #endif
 			sem_wait(semPtEntree);
 #ifdef MAP
-		f << "Entrée=" << PorteNum << " : Semaphore débloqué !" << std::endl;
+			f << "Entrée=" << PorteNum << " : Semaphore débloqué !" << std::endl;
 #endif
-			//* Y'a de la place, on se gare :
+			//* Y'a MAINTENANT de la place, on se gare :
 			//* On décrémente le compteur avant :
 			//* Avec gestion du sémaphore
 			sem_wait(semPtShmCompteur);
@@ -385,9 +394,11 @@ void Entree(int porte_num) {
 			Garage(req, barriere, tuture, semPtShmParking, shmPtParking);
 		}
 	}
+	/*************** FIN PHASE MOTEUR *******/
 #ifdef MAP
 	f.close();
 #endif
+	/************** PHASE DESTRUCTION **********/
 	//* If, for any reason, we get here, make sure everything closes properly :
 	FinProgramme(0);
 }
