@@ -4,7 +4,6 @@ static int descGB;
 static int descBPP;
 static int descBPA;
 static int descS;
-static unsigned short int NextVoitureId = 1;
 
 static void FinProgramme(int signum) {
 	if(descGB != -1) {
@@ -70,7 +69,7 @@ void pousserVoitureVersSortie(unsigned int valeur) {
 }
 
 void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur) {
-	static unsigned int voituresId = 0;
+	static unsigned short int NextVoitureId = 1;
 #ifdef MAP
 	std::ofstream f("debug_kb_canalw.log");
 	f << "pousserVoitureVersEntree() lancée avec : valeur=" << valeur << std::endl;
@@ -92,7 +91,6 @@ void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur) {
 	}
 
 	voiture tuture;
-	tuture.id = ++voituresId;
 	tuture.type = usager;
 	if(NextVoitureId > MAX_PLAQUE) {
 		NextVoitureId = 1;

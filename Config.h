@@ -7,10 +7,18 @@
  *************************************************************************/
 
 //---------- Interface du fichier de configuration Config.h -----------
+// ------- Note : Cette interface n'a pas de fichier de réalisation (.cpp) lié ---
 
 #ifndef CONFIG_H
 #define	CONFIG_H
 
+
+/////////////////////////////////////////////////////////////////  INCLUDE
+//--------------------------------------------------- Interfaces utilisées
+#include "Outils.h"
+
+//------------------------------------------------------------- Constantes
+//------------------------------------------------------------- Canaux
 #define CANAL_KEY_ENTREE_GB "key_entree_GB.fifo"
 #define ENTREE_GB 2
 #define CANAL_KEY_ENTREE_BP_P "key_entree_BPP.fifo"
@@ -19,6 +27,7 @@
 #define ENTREE_A 1
 #define CANAL_KEY_SORTIE "key_sortie.fifo"
         
+//------------------------------------------------------------- Sémaphores
 #define SEM_ENTREE_GB "/entree_GB"
 #define SEM_ENTREE_BP_P "/entree_BPP"
 #define SEM_ENTREE_BP_A "/entree_BPA"
@@ -27,15 +36,18 @@
 #define SEM_SHM_PARKING "/parking"
 #define NB_PORTES 3
 
+//------------------------------------------------------------- Choix du menu
 #define MENU_CHOICE_PROF_BP 1
 #define MENU_CHOICE_PROF_GB 2
 #define MENU_CHOICE_AUTRE_BP 1
 #define MENU_CHOICE_AUTRE_GB 2
 
+//------------------------------------------------------------- Mémoires partagées
 #define CLEF_COMPTEUR 11111
 #define CLEF_REQUETES 22222
 #define CLEF_PARKING 33333
 
+//------------------------------------------------------------- Constantes divers
 #define CAPACITE_PARKING 8
 
 #define MAX_PLAQUE 999
@@ -43,9 +55,14 @@
 #define EXIT_CODE 0
 
 
-#include "Outils.h"
+//------------------------------------------------------------------ Types
 
-
+/** Type <requete> : Stockage d'informations relatives à un usager
+ * ayant un numéro minéralogique
+ * à un instant donné
+ * Le type <requete> pourra être utilisé à n'importe quelles fins ayant besoin de 
+ * regrouper ces informations
+ */
 typedef struct r
 {
     TypeUsager type;
@@ -53,14 +70,13 @@ typedef struct r
     short int plaque;
 } requete ;
 
-
+/** Type voiture :
+ * regroupe des informations sur un usager ayant une plaque minéralogique
+ */
 typedef struct v {
-    unsigned int id;
     TypeUsager type;
-    short int plaque;
+    unsigned short int plaque;
 } voiture;
-
-#define MAP
 
 #ifdef MAP
 //* Debugging purposes :

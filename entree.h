@@ -12,8 +12,9 @@
 #define	ENTREE_H
 
 
-/////////////////////////////////////////////////////////////////// PUBLIC
-//---------------------------------------------------- Fonctions publiques
+
+/////////////////////////////////////////////////////////////////  INCLUDE
+//--------------------------------------------------- Interfaces utilisées
 #include <fcntl.h>
 #include <sys/types.h>
 #include <time.h>
@@ -31,9 +32,10 @@
 //------------------------------------------------------------------ Types
 typedef std::vector<pid_t> pidvect;
 
-#ifdef MAP
-#include <fstream>
-#endif
+
+
+//////////////////////////////////////////////////////////////////  PUBLIC
+//---------------------------------------------------- Fonctions publiques
 
 
 void Entree(int porte_num);
@@ -94,6 +96,7 @@ unsigned char EntreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, t
  *		est totalement terminé.
  *      
  *		<retour> : Le retour de cette fonction est le pid de la tâche fille créée.
+ *			<retour> vaut 0 si une erreur est survenue
  *      
  * 
  * Contrat : 
