@@ -80,7 +80,7 @@ void Commande(char code, unsigned int valeur);
  *      le comportement est indéterminé en cas de non-respect de ces contraintes
 */
 
-void pousserVoitureVersSortie(unsigned int valeur);
+void pousserVoitureVersSortie(place_num_t valeur);
 /** Mode d'emploi :
  *      Cette fonction est appelée par Menu() (cf. module <Outils>)
  *      <valeur> : Place de parking à libérer (en faisant sortir la voiture !)
@@ -94,11 +94,11 @@ void pousserVoitureVersSortie(unsigned int valeur);
  *      le comportement est indéterminé en cas de non-respect de ces contraintes
 */
 
-void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur);
+void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere barriere);
 /** Mode d'emploi :
  *      Cette fonction est appelée par Menu() (cf. module <Outils>)
  *      <usager> : Type d'usager qui vient d'arriver à une barrière
- *      <valeur> : Barrière à laquelle la voiture vient d'arriver
+ *      <barriere> : Barrière à laquelle la voiture vient d'arriver
  *      
  *      Cette fonction se charge de faire parvenir à la bonne tâche entrée
  *      une requête d'arrivée d'un usager de type <usager>
@@ -106,7 +106,7 @@ void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur);
  * 
  * Contrat : 
  *      <usager> doit être différent de AUCUN
- *      <valeur> doit être différent de AUCUNE
+ *      <barriere> doit être différent de AUCUNE
  *      le comportement est indéterminé en cas de non-respect de ces contraintes
 */
 

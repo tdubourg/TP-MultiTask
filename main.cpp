@@ -103,7 +103,7 @@ int main ( int argc, char** argv ) {
 #endif
 
     //*Création des mémoires partagées
-    if ( !error && ( shmIdCompteur = shmget ( CLEF_COMPTEUR, sizeof (unsigned int ), 0666 | IPC_CREAT ) ) < 0 ) {
+    if ( !error && ( shmIdCompteur = shmget ( CLEF_COMPTEUR, sizeof (compteur_t ), 0666 | IPC_CREAT ) ) < 0 ) {
         error = true;
 #ifdef MAP
         f << "fail creation memoire partagee" << endl;

@@ -252,7 +252,7 @@ void Entree(int porte_num) {
 #endif
 	int shmIdRequetes = shmget(CLEF_REQUETES, sizeof (requete) * NB_PORTES, 0666 | 0);
 	requete *shmPtRequetes = (requete*) shmat(shmIdRequetes, NULL, 0);
-	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (unsigned int), 0666 | 0);
+	int shmIdCompteur = shmget(CLEF_COMPTEUR, sizeof (compteur_t), 0666 | 0);
 	unsigned int * shmPtCompteur = (unsigned int *) shmat(shmIdCompteur, NULL, 0);
 	int shmIdParking = shmget(CLEF_PARKING, sizeof (requete) * CAPACITE_PARKING, 0666 | 0);
 	requete* shmPtParking = (requete*) shmat(shmIdParking, NULL, 0);

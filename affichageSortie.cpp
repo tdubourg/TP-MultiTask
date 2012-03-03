@@ -104,7 +104,7 @@ void affichageSortie ( unsigned int place ) {
     }
 
     //*Ouverture des mémoires partagées 
-    int shmIdCompteur = shmget ( CLEF_COMPTEUR, sizeof (int ), 0666 | 0 );
+    int shmIdCompteur = shmget ( CLEF_COMPTEUR, sizeof (compteur_t ), 0666 | 0 );
     if ( shmIdCompteur < 0 ) {
         error = true;
     }

@@ -51,7 +51,7 @@ void Keyboard() {
 	FinProgramme(0);
 }
 
-void pousserVoitureVersSortie(unsigned int valeur) {
+void pousserVoitureVersSortie(place_num_t valeur) {
 #ifdef MAP
 	std::ofstream f("debug_kb_pousserSortie.log");
 	f << "pousserVoitureVersSortie() lancée avec : valeur=" << valeur << std::endl;
@@ -59,7 +59,8 @@ void pousserVoitureVersSortie(unsigned int valeur) {
 #ifdef MAP
 	f << "Debut d'écriture sur le canal" << std::endl;
 #endif
-	write(descS, &valeur, sizeof (unsigned int));
+	//* Envoi du numéro de place à libérer à la sortie : 
+	write(descS, &valeur, sizeof (place_num_t));
 #ifdef MAP
 	f << "Fin d'écriture sur le canal" << std::endl;
 #endif
@@ -68,22 +69,22 @@ void pousserVoitureVersSortie(unsigned int valeur) {
 #endif
 }
 
-void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere valeur) {
+void pousserVoitureVersEntree(TypeUsager usager, TypeBarriere barriere) {
 	static unsigned short int NextVoitureId = 1;
 #ifdef MAP
 	std::ofstream f("debug_kb_canalw.log");
-	f << "pousserVoitureVersEntree() lancée avec : valeur=" << valeur << std::endl;
+	f << "pousserVoitureVersEntree() lancée avec : valeur=" << barriere << std::endl;
 #endif
 	int canalDesc;
 
 	if(usager == PROF) {
-		if(valeur == PROF_BLAISE_PASCAL) {
+		if(barriere == PROF_BLAISE_PASCAL) {
 			canalDesc = descBPP;
 		} else {
 			canalDesc = descGB;
 		}
 	} else {
-		if(valeur == AUTRE_BLAISE_PASCAL) {
+		if(barriere == AUTRE_BLAISE_PASCAL) {
 			canalDesc = descBPA;
 		} else {
 			canalDesc = descGB;

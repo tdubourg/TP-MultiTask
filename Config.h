@@ -78,6 +78,10 @@ typedef struct v {
     unsigned short int plaque;
 } voiture;
 
+typedef unsigned int compteur_t;
+
+typedef unsigned short int place_num_t;
+
 #ifdef MAP
 //* Debugging purposes :
 #include <iostream>
