@@ -57,6 +57,27 @@
 
 //------------------------------------------------------------------ Types
 
+/** Notes : les trois types suivants peuvent paraître peut utiles
+ * Mais étant donné qu'ils sont utilisés pr gérer des informations au travers de 
+ * différentes tâches dans différents fichiers
+ * la taille de stockage des valeurs peut-être critique
+ * en définissant un type, on s'assure que si on change la taille de stockage 
+ * d'un valeur en mémoire, un jour
+ * on aura un changement qui se répercutera sur tout le code de l'application via l'utilisation des
+ * sizeof() sur le type custom défini ici.
+ * On évite ainsi une source d'erreur difficile à détecter et qui peut n'apparaître que 
+ * très rarement !
+ */
+
+//* Type d'un compteur de places libres dans le parking
+typedef unsigned short int compteur_t;
+
+//* Type d'un numéro de place dans le parking
+typedef unsigned short int place_num_t;
+
+//* Type d'un numéro minéralogique
+typedef unsigned int plaque_t;
+
 /** Type <requete> : Stockage d'informations relatives à un usager
  * ayant un numéro minéralogique
  * à un instant donné
@@ -75,12 +96,8 @@ typedef struct r
  */
 typedef struct v {
     TypeUsager type;
-    unsigned short int plaque;
+    plaque_t plaque;
 } voiture;
-
-typedef unsigned int compteur_t;
-
-typedef unsigned short int place_num_t;
 
 #ifdef MAP
 //* Debugging purposes :

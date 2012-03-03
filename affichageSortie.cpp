@@ -60,7 +60,7 @@ static void FinProgramme ( int num ) {
 
 /*----------------------------------------- Fonctions publiques ---------------------------------------------- */
 
-void affichageSortie ( unsigned int place ) {
+void affichageSortie ( place_num_t place ) {
     //Algorithme : aucun
     //
 #ifdef MAP
@@ -213,7 +213,7 @@ void affichageSortie ( unsigned int place ) {
     f << "AFFICHAGESORTIE : Lancement de l'affichage des infos relatives à la sortie toute récente de tuture." << std::endl;
 #endif
 
-    AfficherSortie ( shmPtParking[place].type, shmPtParking[place].plaque, shmPtParking[place].arrivee, time ( NULL ) );
+    AfficherSortie ( shmPtParking[place-1].type, shmPtParking[place-1].plaque, shmPtParking[place-1].arrivee, time ( NULL ) );//* Note : place = [1,8] mais tableau = [0,7]
 
 #ifdef MAP
     f << "AFFICHAGESORTIE : Affichage effectué/" << std::endl;

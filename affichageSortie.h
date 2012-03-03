@@ -36,7 +36,7 @@
 #include "Outils.h"
 #include "Config.h"
 
-void affichageSortie(unsigned int place);
+void affichageSortie(place_num_t place);
 // Mode d'emploi :
 //    - cette fonction lance une tâche fille AfficherSortie() chargée de dessiner 
 //      la voiture sortant du parking. La tâche <affichageSortie> attend la fin de

@@ -82,7 +82,7 @@ static void FinProgramme(int signum) {
 	f.close();
 #endif
 	exit(EXIT_CODE);
-}
+} // Fin FinProgramme
 
 /**
  * Mode d'emploi / description : 
@@ -113,7 +113,7 @@ static void FinAttenteFinGarage(int signum) {
 	f.close();
 #endif
 	exit(EXIT_CODE);
-}
+} // Fin FinAttenteFinGarage
 
 //////////////////////////////////////////////////////////////////  PUBLIC
 //---------------------------------------------------- Fonctions publiques
@@ -167,7 +167,7 @@ pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShm
 	sleep(1);
 
 	return noFille;
-}
+} // Fin Garage
 
 /**
  * Mode d'emploi : cf. entree.h
@@ -222,7 +222,7 @@ unsigned char EntreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, t
 #endif
 	//* Et on retourne la place où elle s'est garée à l'appelant :
 	return place;
-}
+} // Fin EntreeAttenteFinGarage
 
 /**
  * Mode d'emploi : cf. entree.h
@@ -401,4 +401,4 @@ void Entree(int porte_num) {
 	/************** PHASE DESTRUCTION **********/
 	//* If, for any reason, we get here, make sure everything closes properly :
 	FinProgramme(0);
-}
+} // Fin Entree
