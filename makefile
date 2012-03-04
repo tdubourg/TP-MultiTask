@@ -3,7 +3,7 @@ EXE=Parking
 EFFACE=clean
 INT=affichageSortie.h entree.h keyboard.h main.h sortie.h
 OBJ=$(INT:.h=.o)
-LIBS= -lpthread /usr/lib/libncurses.a /usr/lib/libtcl.so
+LIBS= -lpthread -lcurses -lncurses /usr/lib/libtcl.so
 CUSTOM_LIBS=/public/tp/tp-multitache/libtp.a
 ECHO=echo
 RM=rm
