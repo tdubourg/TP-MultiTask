@@ -50,9 +50,9 @@
       <compileType>
         <linkerTool>
           <linkerLibItems>
+            <linkerLibFileItem>/public/tp/tp-multitache/libtp.a</linkerLibFileItem>
             <linkerLibStdlibItem>Curses</linkerLibStdlibItem>
             <linkerLibFileItem>/usr/lib/libtcl.so</linkerLibFileItem>
-            <linkerLibFileItem>/public/tp/tp-multitache/libtp.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

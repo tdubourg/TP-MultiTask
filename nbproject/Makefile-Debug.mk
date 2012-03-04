@@ -55,15 +55,15 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lcurses /usr/lib/libtcl.so /public/tp/tp-multitache/libtp.a
+LDLIBSOPTIONS=/public/tp/tp-multitache/libtp.a -lcurses /usr/lib/libtcl.so
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit: /usr/lib/libtcl.so
-
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit: /public/tp/tp-multitache/libtp.a
+
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit: /usr/lib/libtcl.so
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/multit: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
