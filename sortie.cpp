@@ -68,7 +68,7 @@ void Sortie ( ) {
     }
 
     //------------------------------------Moteur--------------------------------------- 
-    unsigned int place;
+    unsigned short int place;
     int noAffSortie;
 
     if ( error ) {
