@@ -22,7 +22,7 @@ RMFLAGS=-f
 
 $(EXE): $(OBJ)
 	$(ECHO) $(EXE)
-	$(COMP) -o"$(EXE)" $(OBJ) $(LIBS) $(CUSTOM_LIBS)
+	$(COMP) -o"$(EXE)" $(OBJ) $(CUSTOM_LIBS) $(LIBS)
 	
 $(EFFACE):
 	$(RM) $(RMFLAGS) $(EXE) $(OBJ)
