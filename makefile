@@ -1,9 +1,9 @@
 COMP=g++
 EXE=Parking
 EFFACE=clean
-INT=Config.h affichageSortie.h entree.h Heure.h keyboard.h main.h Menu.h Outils.h sortie.h
+INT=affichageSortie.h entree.h keyboard.h main.h sortie.h
 OBJ=$(INT:.h=.o)
-LIBS=-ltcl -lcurses -l /public/tp/tp-multitache/libtp.a
+LIBS=-ltcl -lcurses -L /public/tp/tp-multitache/libtp.a
 ECHO=echo
 RM=rm
 RMFLAGS=-f
@@ -13,12 +13,13 @@ RMFLAGS=-f
 #	keyboard.o: keyboard.h Menu.h Config.h
 #	sortie.o: sortie.h affichageSortie.h
 #	main.o: Heure.h keyboard.h entree.h sortie.h Config.h
-$(EXE): $(OBJ)
+# $(EXE): $(OBJ)
+#all: $(EXE)
 %.o: %.cpp
-	$(ECHO) compilation de $<
-	$(COMP) -c $<
+#	$(ECHO) compilation de $<
+	$(COMP) -c $< -o $@
 
-	$(EXE): $(OBJ)
+$(EXE): $(OBJ)
 	$(ECHO) $(EXE)
 	$(COMP) $(LIBS) -o $(EXE) $(OBJ)
 	
