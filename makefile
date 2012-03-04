@@ -3,7 +3,7 @@ EXE=Parking
 EFFACE=clean
 INT=Config.h affichageSortie.h entree.h Heure.h keyboard.h main.h Menu.h Outils.h sortie.h
 OBJ=$(INT:.h=.o)
-LIBS= 
+LIBS=-ltcl -lcurses -l /public/tp/tp-multitache/libtp.a
 ECHO=echo
 RM=rm
 RMFLAGS=-f
@@ -20,9 +20,9 @@ $(EXE): $(OBJ)
 
 	$(EXE): $(OBJ)
 	$(ECHO) $(EXE)
-	$(COMP) -o $(EXE) $(OBJ)
+	$(COMP) $(LIBS) -o $(EXE) $(OBJ)
 	
-	$(EFFACE):
+$(EFFACE):
 	$(RM) $(RMFLAGS) $(EXE) $(OBJ)
 
 	
