@@ -40,8 +40,6 @@
 /*----------------------------------------- Includes personels ---------------------------------------------- */
 
 #include "Heure.h"
-#include "Menu.h"
-#include "Outils.h"
 #include "keyboard.h"
 #include "entree.h"
 #include "sortie.h"
