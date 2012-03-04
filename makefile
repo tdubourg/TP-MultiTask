@@ -9,13 +9,6 @@ ECHO=echo
 RM=rm
 RMFLAGS=-f
 
-#	affichageSortie.o: affichageSortie.h Outils.h Config.h
-#	entree.o: entree.h Outils.h Config.h
-#	keyboard.o: keyboard.h Menu.h Config.h
-#	sortie.o: sortie.h affichageSortie.h
-#	main.o: Heure.h keyboard.h entree.h sortie.h Config.h
-# $(EXE): $(OBJ)
-#all: $(EXE)
 %.o: %.cpp
 #	$(ECHO) compilation de $<
 	$(COMP) -c $< -o $@
