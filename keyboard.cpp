@@ -30,18 +30,16 @@ static int descS = -1;
 /**
  * Mode d'emploi / description : 
  * FinProgramme : fonction de terminaison de la tâche courante 
- * Mode d'emploi :
- * <signum> : Numéro de signal
+ * Mode d'emploi : 
  * 
  * Cette fonction se charge de la fermeture de toutes les ressources utilisées 
  * par la tâche courante.
  * Une fois la phase de destruction de la tâche courante effectuée, cette fonction
  * termine la tâche courante.
  * 
- * Contrat :
- * <signum> : Ce paramètre est ignoré
+ * Contrat : aucun
  */
-static void FinProgramme(int signum) {
+static void FinProgramme(int useless) {
 	if (descGB != -1) {
 		close(descGB);
 	}

@@ -291,9 +291,16 @@ void Entree(int porte_num) {
 		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
 		FinProgramme(EXIT_CODE);
 	}
+	
 #ifdef MAP
 	f << "FIN récupération du séma pour Parking" << std::endl;
 #endif
+
+	sem_t* semPtShmRequetes;
+	if ((semPtShmRequetes = sem_open(SEM_SHM_REQUETE, 0, 0666, 1)) == SEM_FAILED) {
+		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
+		FinProgramme(EXIT_CODE);
+	}
 	/*********** INITIALISATION CONDITIONNELLE / SPÉCIFIQUE ***********/
 	
 	//* Début de l' "initialisation conditionnelle" (en fctn de quelle entrée on est !)
@@ -358,7 +365,8 @@ void Entree(int porte_num) {
 		f << "Entrée=" << PorteNum << " : Il y a actuellement " << (*shmPtCompteur) << "places libres dans le parking." << std::endl;
 #endif
 
-		//* On formule une requête d'entrée :
+		//* On formule une requête d'entrée : 
+		//* (note : la requête n'est pas encore enregistrée, à ce point du programme, elle le sera si parking plein)
 		requete req;
 		req.arrivee = (int) time(NULL);
 		req.type = tuture.type;
@@ -373,7 +381,9 @@ void Entree(int porte_num) {
 
 			Garage(req, barriere, tuture, semPtShmParking, shmPtParking);
 		} else {//* Le parking est plein :
+			sem_wait(semPtShmRequetes);
 			shmPtRequetes[porte_num] = req;
+			sem_post(semPtShmRequetes);
 			//* On affiche cette requête :
 			AfficherRequete(barriere, tuture.type, req.arrivee);
 			//* Puis on attends l'autorisation de faire entrer la voiture :
