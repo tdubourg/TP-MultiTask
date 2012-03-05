@@ -24,7 +24,10 @@ static pidvect tachesFilles;
 static pid_t pidAttenteFinGarage;
 static int PorteNum = -1;
 static int canalDesc = -1;
-
+static sem_t* semPtShmCompteur = NULL;
+static sem_t* semPtShmParking = NULL;
+static sem_t* semPtShmRequetes = NULL;
+static sem_t* semPtEntree = NULL;
 //------------------------------------------------------ Fonctions privées
 
 /**
@@ -77,6 +80,20 @@ static void FinProgramme(int signum) {
 		close(canalDesc);
 	}
 
+	if (semPtShmCompteur != NULL) {
+		sem_close(semPtShmCompteur);
+	}
+	if (semPtShmParking != NULL) {
+		sem_close(semPtShmParking);
+	}
+
+	if (semPtShmRequetes != NULL) {
+		sem_close(semPtShmRequetes);
+	}
+
+	if (semPtEntree != NULL) {
+		sem_close(semPtEntree);
+	}
 #ifdef MAP
 	f << "FinProgramme (entrée=" << PorteNum << "Fin de fermeture des canaux" << std::endl;
 	f.close();
@@ -238,7 +255,7 @@ void Entree(int porte_num) {
 	f << porte_num << std::endl;
 #endif
 	/*********************** INITIALISATION **************************/
-	
+
 	/**** INITIALISATION GÉNÉRALE *** */
 	//* Enregistrement du numéro de porte de manière à ce que tout le monde puisse y accéder (notamment les ss-fonctions)
 	PorteNum = porte_num;
@@ -273,7 +290,6 @@ void Entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
 	//* Séma de synchro sur la mémoire partagée contenant le compteur de places libres ds le parking
-	sem_t* semPtShmCompteur;
 	if ((semPtShmCompteur = sem_open(SEM_SHM_COMPTEUR, 0, 0666, 1)) == SEM_FAILED) {
 		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
 		FinProgramme(EXIT_CODE);
@@ -286,23 +302,21 @@ void Entree(int porte_num) {
 	f << "DEBUT récupération du séma pour Parking" << std::endl;
 #endif
 	//* Séma de synchro sur la mémoire partagée cotenant les infos sur les voitures garées dans le parking
-	sem_t* semPtShmParking;
 	if ((semPtShmParking = sem_open(SEM_SHM_PARKING, 0, 0666, 1)) == SEM_FAILED) {
 		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
 		FinProgramme(EXIT_CODE);
 	}
-	
+
 #ifdef MAP
 	f << "FIN récupération du séma pour Parking" << std::endl;
 #endif
 
-	sem_t* semPtShmRequetes;
 	if ((semPtShmRequetes = sem_open(SEM_SHM_REQUETE, 0, 0666, 1)) == SEM_FAILED) {
 		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
 		FinProgramme(EXIT_CODE);
 	}
 	/*********** INITIALISATION CONDITIONNELLE / SPÉCIFIQUE ***********/
-	
+
 	//* Début de l' "initialisation conditionnelle" (en fctn de quelle entrée on est !)
 	const char *cname;
 	TypeBarriere barriere;
@@ -324,7 +338,7 @@ void Entree(int porte_num) {
 			sem_key = SEM_ENTREE_GB;
 			break;
 	}
-	#ifdef MAP
+#ifdef MAP
 	f << "Debut d'ouverture du canal " << cname << endl;
 #endif
 	//* Ouverture du canal en lecture, file d'attente des voitures à l'entrée :
@@ -338,7 +352,6 @@ void Entree(int porte_num) {
 #ifdef MAP
 	f << "DEBUT récupération du séma pour Compteur" << std::endl;
 #endif
-	sem_t* semPtEntree;
 	if ((semPtEntree = sem_open(sem_key, 0, 0666, 1)) == SEM_FAILED) {
 		Afficher(MESSAGE, "Erreur d'ouverture d'un sémaphore dans l'une des Entrée, terminaison de la tâche");
 		FinProgramme(EXIT_CODE);
@@ -347,7 +360,7 @@ void Entree(int porte_num) {
 #ifdef MAP
 	f << "FIN récupération du séma pour Compteur" << std::endl;
 #endif
-	
+
 	/*********** FIN DE L'INITIALISATION ************/
 
 	/************ PHASE MOTEUR ***************/
