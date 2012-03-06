@@ -1,9 +1,9 @@
 /*************************************************************************
-						   entree  -  description
-							 -------------------
-	début                : 16/02/2012
-	copyright            : (C) 2012-2042 par tdubourg
-	e-mail               : theo.dubourg@insa-lyon.fr
+                           entree  -  description
+                             -------------------
+    début                : 16/02/2012
+    copyright            : (C) 2012-2042 par tdubourg
+    e-mail               : theo.dubourg@insa-lyon.fr
  *************************************************************************/
 
 //---------- Interface du module <entree> (fichier entree.h) ---------
@@ -38,7 +38,7 @@ typedef std::vector<pid_t> pidvect;
 //---------------------------------------------------- Fonctions publiques
 
 
-void Entree(int porte_num);
+void Entree ( int porte_num );
 /** Mode d'emploi :
  *      Cette fonction gère l'ensemble du module <Entree>
  *      Pour avoir plus de détails sur l'algorithme du module <Entree> : cf. le commentaire en début de entree.h
@@ -50,7 +50,7 @@ void Entree(int porte_num);
  *      le comportement est indéterminé en cas de non-respect de ces contraintes
  */
 
-pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShmParking, requete* shmPtParking);
+pid_t Garage ( requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShmParking, requete* shmPtParking );
 /** Mode d'emploi :
  *      Cette fonction est appelée par Entree() 
  *      <req> : Type d'usager qui vient d'arriver à une barrière
@@ -79,7 +79,7 @@ pid_t Garage(requete req, TypeBarriere barriere, voiture tuture, sem_t* semPtShm
  *      le comportement est indéterminé en cas de non-respect de ces contraintes
  */
 
-unsigned char EntreeAttenteFinGarage(TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture);
+unsigned char EntreeAttenteFinGarage ( TypeBarriere barriere, TypeUsager usager, time_t arrivee, unsigned int numVoiture );
 /** Mode d'emploi :
  *      Cette fonction est appelée par Garage() 
  *      <barriere> : Barrière à laquelle la voiture vient d'arriver

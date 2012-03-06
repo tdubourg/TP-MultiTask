@@ -26,7 +26,7 @@
 #define CANAL_KEY_ENTREE_BP_A "key_entree_BPA.fifo"
 #define ENTREE_A 1
 #define CANAL_KEY_SORTIE "key_sortie.fifo"
-        
+
 //------------------------------------------------------------- Sémaphores
 #define SEM_ENTREE_GB "/entree_GB"
 #define SEM_ENTREE_BP_P "/entree_BPP"
@@ -89,12 +89,13 @@ typedef struct r
     TypeUsager type;
     time_t arrivee;
     short int plaque;
-} requete ;
+} requete;
 
 /** Type voiture :
  * regroupe des informations sur un usager ayant une plaque minéralogique
  */
-typedef struct v {
+typedef struct v
+{
     TypeUsager type;
     plaque_t plaque;
 } voiture;
